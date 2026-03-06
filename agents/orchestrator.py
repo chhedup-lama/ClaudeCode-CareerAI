@@ -1,5 +1,9 @@
 from agents.base import client, MODEL, extract_json
 from agents.research import run_research_agent
+from agents.workforce_analytics import run_workforce_analytics_agent
+from agents.financial_impact import run_financial_impact_agent
+from agents.strategy import run_strategy_agent
+from agents.report_generator import run_report_generator_agent
 from tools.data_loader import check_data_availability
 from tools.report_formatter import format_report
 from memory.workflow_state import Intent, WorkflowState
@@ -7,6 +11,7 @@ from memory.workflow_state import Intent, WorkflowState
 REQUIRED_FILES = [
     "salary_data.csv",
     "market_hiring_data.csv",
+    "employee_attrition.csv",
     "workforce_headcount.csv",
 ]
 
@@ -30,31 +35,6 @@ def _parse_intent(query: str) -> Intent:
     return Intent(**extract_json(response.content[0].text))
 
 
-def _partial_report(state: WorkflowState) -> str:
-    """Produces a plain Markdown summary from whatever state fields are populated.
-    Used as a fallback until the Report Generator Agent is built."""
-    sections = {}
-
-    if state.research_output:
-        r = state.research_output
-        gap_direction = "below" if r.salary_gap_pct > 0 else "above"
-        sections["market_benchmarking"] = (
-            f"Market median salary for {state.intent.job_family} in {state.intent.region}: "
-            f"€{r.market_median_salary:,.0f}. "
-            f"Company average salary: €{r.company_avg_salary:,.0f} "
-            f"({abs(r.salary_gap_pct):.1f}% {gap_direction} market). "
-            f"Market demand trend: {r.demand_trend} (YoY growth: {r.yoy_growth_rate:.1f}%)."
-        )
-    else:
-        sections["market_benchmarking"] = "_Not yet available._"
-
-    sections["workforce_analytics"] = "_Workforce Analytics Agent not yet built._"
-    sections["financial_impact"] = "_Financial Impact Agent not yet built._"
-    sections["strategic_recommendation"] = "_Strategy Agent not yet built._"
-
-    return format_report(sections)
-
-
 def run(query: str) -> tuple[WorkflowState, str]:
     state = WorkflowState(query=query)
 
@@ -71,14 +51,49 @@ def run(query: str) -> tuple[WorkflowState, str]:
         state.errors.append(f"Intent parsing failed: {e}")
         return state, "Could not parse query intent."
 
-    # 3. Run Research Agent
+    # 3. Research Agent — market benchmarking
     if "salary_data.csv" not in missing:
         try:
             state.research_output = run_research_agent(state.intent)
         except Exception as e:
             state.errors.append(f"Research agent failed: {e}")
 
-    # 4. Produce partial report
-    report_md = _partial_report(state)
+    # 4. Workforce Analytics Agent — attrition and retention signals
+    if "employee_attrition.csv" not in missing and "workforce_headcount.csv" not in missing:
+        try:
+            state.analytics_output = run_workforce_analytics_agent(state.intent)
+        except Exception as e:
+            state.errors.append(f"Workforce analytics agent failed: {e}")
+
+    # 5. Financial Impact Agent — requires both research and analytics outputs
+    if state.research_output and state.analytics_output:
+        try:
+            state.financial_output = run_financial_impact_agent(
+                state.research_output, state.analytics_output
+            )
+        except Exception as e:
+            state.errors.append(f"Financial impact agent failed: {e}")
+
+    # 6. Strategy Agent — synthesises all available outputs into a recommendation
+    if state.research_output or state.analytics_output or state.financial_output:
+        try:
+            state.strategy_output = run_strategy_agent(
+                state.research_output, state.analytics_output, state.financial_output
+            )
+        except Exception as e:
+            state.errors.append(f"Strategy agent failed: {e}")
+
+    # 7. Report Generator Agent — produces the final executive report
+    try:
+        report = run_report_generator_agent(state)
+        report_md = format_report(report.model_dump())
+    except Exception as e:
+        state.errors.append(f"Report generator failed: {e}")
+        report_md = format_report({
+            "market_benchmarking": str(state.research_output) if state.research_output else "_Unavailable._",
+            "workforce_analytics": str(state.analytics_output) if state.analytics_output else "_Unavailable._",
+            "financial_impact": str(state.financial_output) if state.financial_output else "_Unavailable._",
+            "strategic_recommendation": str(state.strategy_output) if state.strategy_output else "_Unavailable._",
+        })
 
     return state, report_md
