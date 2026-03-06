@@ -50,7 +50,7 @@ def _execute_tool(name: str, inputs: dict) -> dict:
     return {"error": f"Unknown tool: {name}"}
 
 
-def run_report_generator_agent(state: WorkflowState) -> Report:
+def run_report_generator_agent(state: WorkflowState, on_event: callable | None = None) -> Report:
     inputs = {}
     if state.research_output:
         inputs["research"] = state.research_output.model_dump()
@@ -68,7 +68,7 @@ def run_report_generator_agent(state: WorkflowState) -> Report:
     )
 
     _formatted_report.clear()
-    run_agent_loop(SYSTEM_PROMPT, user_message, TOOLS, _execute_tool)
+    run_agent_loop(SYSTEM_PROMPT, user_message, TOOLS, _execute_tool, on_event=on_event)
 
     if not _formatted_report:
         raise ValueError("Report Generator Agent did not produce a report.")

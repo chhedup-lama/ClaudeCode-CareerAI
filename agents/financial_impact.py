@@ -52,6 +52,7 @@ def _execute_tool(name: str, inputs: dict) -> dict:
 def run_financial_impact_agent(
     research: ResearchOutput,
     analytics: AnalyticsOutput,
+    on_event: callable | None = None,
 ) -> FinancialOutput:
     context = json.dumps({
         "market_median_salary": research.market_median_salary,
@@ -69,7 +70,7 @@ def run_financial_impact_agent(
         f"Then recommend the most balanced scenario given the salary gap and attrition risk. "
         f"Return your findings as a JSON object."
     )
-    result = run_agent_loop(SYSTEM_PROMPT, user_message, TOOLS, _execute_tool)
+    result = run_agent_loop(SYSTEM_PROMPT, user_message, TOOLS, _execute_tool, on_event=on_event)
     data = extract_json(result)
     scenarios = [Scenario(**s) for s in data["scenarios"]]
     return FinancialOutput(scenarios=scenarios, recommended_scenario=data["recommended_scenario"])

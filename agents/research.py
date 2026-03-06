@@ -88,12 +88,12 @@ def _execute_tool(name: str, inputs: dict) -> dict:
     return {"error": f"Unknown tool: {name}"}
 
 
-def run_research_agent(intent: Intent) -> ResearchOutput:
+def run_research_agent(intent: Intent, on_event: callable | None = None) -> ResearchOutput:
     user_message = (
         f"Analyze the labor market for {intent.job_family} in {intent.region}. "
         f"Use your tools to find the market median salary, the company average salary, "
         f"the salary gap percentage, and the year-over-year demand trend. "
         f"Return your findings as a JSON object."
     )
-    result = run_agent_loop(SYSTEM_PROMPT, user_message, TOOLS, _execute_tool)
+    result = run_agent_loop(SYSTEM_PROMPT, user_message, TOOLS, _execute_tool, on_event=on_event)
     return ResearchOutput(**extract_json(result))

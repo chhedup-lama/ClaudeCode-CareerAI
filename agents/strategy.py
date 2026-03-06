@@ -25,6 +25,7 @@ def run_strategy_agent(
     research: ResearchOutput | None,
     analytics: AnalyticsOutput | None,
     financial: FinancialOutput | None,
+    on_event: callable | None = None,
 ) -> StrategyOutput:
     inputs = {}
     if research:
@@ -39,5 +40,7 @@ def run_strategy_agent(
         f"{json.dumps(inputs, indent=2)}\n\n"
         f"Return your recommendation as a JSON object."
     )
-    result = run_agent_loop(SYSTEM_PROMPT, user_message, tools=None, tool_executor=None)
+    if on_event:
+        on_event("thinking", {"message": "Synthesising research, analytics, and financial data into a strategic recommendation..."})
+    result = run_agent_loop(SYSTEM_PROMPT, user_message, tools=None, tool_executor=None, on_event=on_event)
     return StrategyOutput(**extract_json(result))

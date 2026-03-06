@@ -1,3 +1,7 @@
 anthropic
 pandas
 pydantic
+fastapi
+uvicorn[standard]
+python-multipart
+openpyxl

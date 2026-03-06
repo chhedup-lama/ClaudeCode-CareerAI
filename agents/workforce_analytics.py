@@ -95,12 +95,12 @@ def _execute_tool(name: str, inputs: dict) -> dict:
     return {"error": f"Unknown tool: {name}"}
 
 
-def run_workforce_analytics_agent(intent: Intent) -> AnalyticsOutput:
+def run_workforce_analytics_agent(intent: Intent, on_event: callable | None = None) -> AnalyticsOutput:
     user_message = (
         f"Analyze the internal workforce for {intent.job_family} in {intent.region}. "
         f"Use your tools to compute: the overall attrition rate, risk level, "
         f"highest-risk workforce segment, headcount, and average tenure. "
         f"Return your findings as a JSON object."
     )
-    result = run_agent_loop(SYSTEM_PROMPT, user_message, TOOLS, _execute_tool)
+    result = run_agent_loop(SYSTEM_PROMPT, user_message, TOOLS, _execute_tool, on_event=on_event)
     return AnalyticsOutput(**extract_json(result))

@@ -10,10 +10,14 @@ def run_agent_loop(
     user_message: str,
     tools: list[dict] | None = None,
     tool_executor: callable | None = None,
+    on_event: callable | None = None,
 ) -> str:
     """
     Runs an agentic loop until the model reaches end_turn.
     Returns the final text response from the model.
+
+    on_event(event_type, data) is called for tool_call and tool_result events
+    to support real-time streaming visibility.
     """
     messages = [{"role": "user", "content": user_message}]
     kwargs = {"model": MODEL, "max_tokens": 4096, "system": system_prompt, "messages": messages}
@@ -33,7 +37,14 @@ def run_agent_loop(
             tool_results = []
             for block in response.content:
                 if block.type == "tool_use":
+                    if on_event:
+                        on_event("tool_call", {"tool": block.name, "input": block.input})
                     result = tool_executor(block.name, block.input)
+                    if on_event:
+                        display = str(result)
+                        if len(display) > 400:
+                            display = display[:400] + "..."
+                        on_event("tool_result", {"tool": block.name, "result": display})
                     tool_results.append({
                         "type": "tool_result",
                         "tool_use_id": block.id,

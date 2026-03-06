@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareerAI — Workforce Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sidebar-bg: #0d1117;
+      --sidebar-border: #21262d;
+      --card-bg: #161b22;
+      --card-border: #30363d;
+      --accent: #7c3aed;
+      --accent-dim: #5b21b6;
+      --accent-glow: rgba(124, 58, 237, 0.3);
+      --text-primary: #f0f6fc;
+      --text-secondary: #8b949e;
+      --text-muted: #484f58;
+      --success: #059669;
+      --success-bg: rgba(5, 150, 105, 0.1);
+      --warning: #d97706;
+      --error: #dc2626;
+      --error-bg: rgba(220, 38, 38, 0.1);
+      --report-bg: #ffffff;
+      --report-section-bg: #f8fafc;
+      --report-border: #e2e8f0;
+      --report-text: #1e293b;
+      --report-secondary: #64748b;
+    }
+
+    html, body { height: 100%; font-family: 'Inter', -apple-system, sans-serif; }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background: var(--sidebar-bg);
+      color: var(--text-primary);
+      overflow: hidden;
+    }
+
+    /* ── Navbar ── */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      height: 56px;
+      background: var(--sidebar-bg);
+      border-bottom: 1px solid var(--sidebar-border);
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .navbar-logo {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, var(--accent), #4f46e5);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .navbar-tagline {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .navbar-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+
+    /* ── Layout ── */
+    .layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 400px;
+      flex-shrink: 0;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--sidebar-border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-inner {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 16px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--sidebar-border) transparent;
+    }
+
+    .sidebar-inner::-webkit-scrollbar { width: 4px; }
+    .sidebar-inner::-webkit-scrollbar-track { background: transparent; }
+    .sidebar-inner::-webkit-scrollbar-thumb { background: var(--sidebar-border); border-radius: 2px; }
+
+    /* ── Query Section ── */
+    .section-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .query-textarea {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+      resize: none;
+      min-height: 80px;
+      transition: border-color 0.15s;
+      outline: none;
+    }
+
+    .query-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .query-textarea::placeholder { color: var(--text-muted); }
+
+    /* ── Upload Section ── */
+    .upload-section {
+      margin-top: 12px;
+    }
+
+    .upload-drop {
+      border: 1px dashed var(--card-border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      position: relative;
+    }
+
+    .upload-drop:hover { border-color: var(--accent); background: rgba(124, 58, 237, 0.05); }
+    .upload-drop.has-file { border-color: var(--success); background: var(--success-bg); }
+
+    .upload-drop input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .upload-icon { font-size: 18px; margin-bottom: 4px; }
+
+    .upload-text {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .upload-hint {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .upload-status {
+      margin-top: 8px;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      display: none;
+    }
+
+    .upload-status.success { background: var(--success-bg); color: var(--success); display: block; }
+    .upload-status.error { background: var(--error-bg); color: var(--error); display: block; }
+
+    /* ── Run Button ── */
+    .run-btn {
+      width: 100%;
+      margin-top: 12px;
+      padding: 10px 16px;
+      background: linear-gradient(135deg, var(--accent), #4f46e5);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+
+    .run-btn:hover { opacity: 0.9; }
+    .run-btn:active { transform: scale(0.98); }
+    .run-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .run-btn .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      display: none;
+    }
+
+    .run-btn.loading .spinner { display: block; }
+    .run-btn.loading .btn-text { display: none; }
+
+    /* ── Pipeline Section ── */
+    .pipeline-section { margin-top: 20px; }
+
+    .pipeline-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .pipeline-divider .section-label { margin: 0; }
+
+    .pipeline-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--sidebar-border);
+    }
+
+    /* ── Agent Card ── */
+    .agent-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .agent-card[data-status="running"] { border-color: var(--accent); }
+    .agent-card[data-status="done"] { border-color: rgba(5, 150, 105, 0.4); }
+    .agent-card[data-status="error"] { border-color: rgba(220, 38, 38, 0.4); }
+
+    .agent-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    /* Status ring */
+    .status-ring {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--text-muted);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    [data-status="running"] .status-ring {
+      border-color: var(--accent);
+      animation: pulse-ring 1.2s ease-in-out infinite;
+    }
+
+    [data-status="done"] .status-ring {
+      border-color: var(--success);
+      background: var(--success);
+      color: white;
+    }
+
+    [data-status="error"] .status-ring {
+      border-color: var(--error);
+      background: var(--error);
+      color: white;
+    }
+
+    [data-status="skip"] .status-ring {
+      border-style: dashed;
+    }
+
+    .agent-name {
+      font-size: 12px;
+      font-weight: 600;
+      flex: 1;
+      color: var(--text-secondary);
+      transition: color 0.2s;
+    }
+
+    [data-status="running"] .agent-name,
+    [data-status="done"] .agent-name { color: var(--text-primary); }
+
+    .agent-badge {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 20px;
+      background: rgba(124, 58, 237, 0.1);
+      color: var(--accent);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .agent-chevron {
+      font-size: 10px;
+      color: var(--text-muted);
+      transition: transform 0.2s;
+    }
+
+    .agent-card.expanded .agent-chevron { transform: rotate(180deg); }
+
+    /* Agent body */
+    .agent-body { display: none; padding: 0 12px 10px; }
+    .agent-card.expanded .agent-body { display: block; }
+
+    /* Plan block (Orchestrator) */
+    .plan-block {
+      background: rgba(124, 58, 237, 0.08);
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    .plan-pipeline {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .plan-step {
+      font-size: 10px;
+      padding: 2px 8px;
+      background: rgba(124, 58, 237, 0.15);
+      color: #a78bfa;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+
+    .plan-arrow { color: var(--text-muted); font-size: 10px; }
+
+    /* Tool log */
+    .tool-log {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 11px;
+      line-height: 1.6;
+      max-height: 200px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--sidebar-border) transparent;
+    }
+
+    .tool-log::-webkit-scrollbar { width: 3px; }
+    .tool-log::-webkit-scrollbar-thumb { background: var(--sidebar-border); }
+
+    .log-call {
+      display: flex;
+      gap: 6px;
+      color: #60a5fa;
+      margin-top: 6px;
+    }
+
+    .log-call-icon { color: var(--accent); flex-shrink: 0; }
+
+    .log-result {
+      display: flex;
+      gap: 6px;
+      color: var(--text-muted);
+      padding-left: 16px;
+      margin-top: 2px;
+    }
+
+    .log-result-icon { color: var(--success); flex-shrink: 0; }
+
+    .log-thinking {
+      color: #fbbf24;
+      font-size: 11px;
+      margin-top: 6px;
+      font-style: italic;
+    }
+
+    /* Agent summary */
+    .agent-summary {
+      margin-top: 8px;
+      padding: 8px 10px;
+      background: var(--success-bg);
+      border-radius: 6px;
+      font-size: 11px;
+      color: #6ee7b7;
+      line-height: 1.5;
+      display: none;
+    }
+
+    [data-status="done"] .agent-summary { display: block; }
+
+    .agent-error-msg {
+      margin-top: 8px;
+      padding: 8px 10px;
+      background: var(--error-bg);
+      border-radius: 6px;
+      font-size: 11px;
+      color: #fca5a5;
+      display: none;
+    }
+
+    [data-status="error"] .agent-error-msg { display: block; }
+
+    /* ── Main Panel ── */
+    .main-panel {
+      flex: 1;
+      background: var(--report-bg);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .report-header {
+      padding: 20px 32px 16px;
+      border-bottom: 1px solid var(--report-border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .report-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--report-text);
+    }
+
+    .report-meta {
+      font-size: 12px;
+      color: var(--report-secondary);
+    }
+
+    .report-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--report-border) transparent;
+    }
+
+    .report-body::-webkit-scrollbar { width: 6px; }
+    .report-body::-webkit-scrollbar-thumb { background: var(--report-border); border-radius: 3px; }
+
+    /* Empty state */
+    .empty-state {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background-image: radial-gradient(circle at 1px 1px, #e2e8f0 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+
+    .empty-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, var(--accent), #4f46e5);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px var(--accent-glow);
+    }
+
+    .empty-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--report-text);
+      margin-bottom: 8px;
+    }
+
+    .empty-sub {
+      font-size: 13px;
+      color: var(--report-secondary);
+      max-width: 320px;
+      line-height: 1.6;
+    }
+
+    /* Report content (from marked.js) */
+    .report-content h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--report-text);
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--report-border);
+    }
+
+    .report-content h2 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--report-text);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin: 28px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .report-content h2::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--report-border);
+    }
+
+    .report-content p {
+      font-size: 14px;
+      line-height: 1.8;
+      color: #334155;
+      margin-bottom: 12px;
+      padding: 16px 20px;
+      background: var(--report-section-bg);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+    }
+
+    .report-content em { font-style: italic; color: var(--report-secondary); }
+    .report-content strong { font-weight: 600; color: var(--report-text); }
+
+    /* Warnings */
+    .warnings-box {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: rgba(217, 119, 6, 0.08);
+      border: 1px solid rgba(217, 119, 6, 0.3);
+      border-radius: 8px;
+      font-size: 12px;
+      color: #d97706;
+      display: none;
+    }
+
+    .warnings-box.visible { display: block; }
+
+    /* Animations */
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @keyframes pulse-ring {
+      0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
+      50% { box-shadow: 0 0 0 4px var(--accent-glow); }
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in { animation: fade-in 0.3s ease forwards; }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <div class="navbar-logo">CA</div>
+      <div>
+        CareerAI
+        <div class="navbar-tagline">Workforce Intelligence Platform</div>
+      </div>
+    </div>
+    <div class="navbar-status">
+      <div class="status-dot"></div>
+      Multi-Agent System · 5 Agents Active
+    </div>
+  </nav>
+
+  <!-- Layout -->
+  <div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-inner">
+
+        <!-- Query -->
+        <div class="section-label">Workforce Query</div>
+        <textarea
+          id="queryInput"
+          class="query-textarea"
+          rows="3"
+          placeholder="e.g. Should we increase compensation for software engineers in Ireland next year?"
+        ></textarea>
+
+        <!-- Upload -->
+        <div class="upload-section">
+          <div class="section-label" style="margin-top:12px;">Salary Data (Optional)</div>
+          <div class="upload-drop" id="uploadDrop">
+            <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" />
+            <div class="upload-icon">📂</div>
+            <div class="upload-text">Upload salary CSV or Excel</div>
+            <div class="upload-hint">Required columns: job_family · region · salary · year</div>
+          </div>
+          <div class="upload-status" id="uploadStatus"></div>
+        </div>
+
+        <!-- Run Button -->
+        <button class="run-btn" id="runBtn" onclick="runAnalysis()">
+          <div class="spinner"></div>
+          <span class="btn-text">▶ Run Analysis</span>
+        </button>
+
+        <!-- Pipeline -->
+        <div class="pipeline-section">
+          <div class="pipeline-divider">
+            <div class="section-label">Agent Pipeline</div>
+          </div>
+
+          <!-- Orchestrator card -->
+          <div class="agent-card" id="card-orchestrator" data-status="pending">
+            <div class="agent-header" onclick="toggleCard('orchestrator')">
+              <div class="status-ring" id="ring-orchestrator">◎</div>
+              <div class="agent-name">Orchestrator</div>
+              <div class="agent-badge">Planner</div>
+              <div class="agent-chevron">▾</div>
+            </div>
+            <div class="agent-body" id="body-orchestrator">
+              <div class="plan-block" id="plan-content">
+                <span style="color: var(--text-muted); font-size:11px;">Awaiting query...</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Research Agent -->
+          <div class="agent-card" id="card-research" data-status="pending">
+            <div class="agent-header" onclick="toggleCard('research')">
+              <div class="status-ring" id="ring-research"></div>
+              <div class="agent-name">Research Agent</div>
+              <div class="agent-badge">Market Intel</div>
+              <div class="agent-chevron">▾</div>
+            </div>
+            <div class="agent-body" id="body-research">
+              <div class="tool-log" id="log-research"></div>
+              <div class="agent-summary" id="summary-research"></div>
+              <div class="agent-error-msg" id="error-research"></div>
+            </div>
+          </div>
+
+          <!-- Workforce Analytics Agent -->
+          <div class="agent-card" id="card-analytics" data-status="pending">
+            <div class="agent-header" onclick="toggleCard('analytics')">
+              <div class="status-ring" id="ring-analytics"></div>
+              <div class="agent-name">Workforce Analytics Agent</div>
+              <div class="agent-badge">Attrition</div>
+              <div class="agent-chevron">▾</div>
+            </div>
+            <div class="agent-body" id="body-analytics">
+              <div class="tool-log" id="log-analytics"></div>
+              <div class="agent-summary" id="summary-analytics"></div>
+              <div class="agent-error-msg" id="error-analytics"></div>
+            </div>
+          </div>
+
+          <!-- Financial Impact Agent -->
+          <div class="agent-card" id="card-financial" data-status="pending">
+            <div class="agent-header" onclick="toggleCard('financial')">
+              <div class="status-ring" id="ring-financial"></div>
+              <div class="agent-name">Financial Impact Agent</div>
+              <div class="agent-badge">Modelling</div>
+              <div class="agent-chevron">▾</div>
+            </div>
+            <div class="agent-body" id="body-financial">
+              <div class="tool-log" id="log-financial"></div>
+              <div class="agent-summary" id="summary-financial"></div>
+              <div class="agent-error-msg" id="error-financial"></div>
+            </div>
+          </div>
+
+          <!-- Strategy Agent -->
+          <div class="agent-card" id="card-strategy" data-status="pending">
+            <div class="agent-header" onclick="toggleCard('strategy')">
+              <div class="status-ring" id="ring-strategy"></div>
+              <div class="agent-name">Strategy Agent</div>
+              <div class="agent-badge">Synthesis</div>
+              <div class="agent-chevron">▾</div>
+            </div>
+            <div class="agent-body" id="body-strategy">
+              <div class="tool-log" id="log-strategy"></div>
+              <div class="agent-summary" id="summary-strategy"></div>
+              <div class="agent-error-msg" id="error-strategy"></div>
+            </div>
+          </div>
+
+          <!-- Report Generator Agent -->
+          <div class="agent-card" id="card-report" data-status="pending">
+            <div class="agent-header" onclick="toggleCard('report')">
+              <div class="status-ring" id="ring-report"></div>
+              <div class="agent-name">Report Generator Agent</div>
+              <div class="agent-badge">Executive Report</div>
+              <div class="agent-chevron">▾</div>
+            </div>
+            <div class="agent-body" id="body-report">
+              <div class="tool-log" id="log-report"></div>
+              <div class="agent-summary" id="summary-report"></div>
+              <div class="agent-error-msg" id="error-report"></div>
+            </div>
+          </div>
+
+        </div><!-- /pipeline -->
+      </div><!-- /sidebar-inner -->
+    </aside>
+
+    <!-- Main Report Panel -->
+    <main class="main-panel">
+      <div class="report-header">
+        <div class="report-title">Intelligence Report</div>
+        <div class="report-meta" id="reportMeta">Awaiting analysis</div>
+      </div>
+      <div class="report-body">
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon">⚡</div>
+          <div class="empty-title">Workforce Intelligence Ready</div>
+          <div class="empty-sub">Ask a workforce strategy question and the multi-agent system will analyse market data, attrition risk, financial impact, and generate an executive recommendation.</div>
+        </div>
+        <div class="report-content" id="reportContent" style="display:none;"></div>
+        <div class="warnings-box" id="warningsBox"></div>
+      </div>
+    </main>
+
+  </div><!-- /layout -->
+
+  <script>
+    // ── Agent name → card key mapping ──
+    const AGENT_KEYS = {
+      'Research Agent': 'research',
+      'Workforce Analytics Agent': 'analytics',
+      'Financial Impact Agent': 'financial',
+      'Strategy Agent': 'strategy',
+      'Report Generator Agent': 'report',
+    };
+
+    let currentSource = null;
+
+    // ── Card toggle ──
+    function toggleCard(key) {
+      const card = document.getElementById(`card-${key}`);
+      card.classList.toggle('expanded');
+    }
+
+    function expandCard(key) {
+      const card = document.getElementById(`card-${key}`);
+      card.classList.add('expanded');
+    }
+
+    // ── Reset UI ──
+    function resetPipeline() {
+      const keys = ['orchestrator', 'research', 'analytics', 'financial', 'strategy', 'report'];
+      keys.forEach(k => {
+        const card = document.getElementById(`card-${k}`);
+        card.setAttribute('data-status', 'pending');
+        card.classList.remove('expanded');
+        const ring = document.getElementById(`ring-${k}`);
+        if (ring) ring.textContent = '';
+        const log = document.getElementById(`log-${k}`);
+        if (log) log.innerHTML = '';
+        const sum = document.getElementById(`summary-${k}`);
+        if (sum) sum.textContent = '';
+        const err = document.getElementById(`error-${k}`);
+        if (err) err.textContent = '';
+      });
+      document.getElementById('plan-content').innerHTML =
+        '<span style="color: var(--text-muted); font-size:11px;">Awaiting query...</span>';
+      document.getElementById('emptyState').style.display = 'flex';
+      document.getElementById('reportContent').style.display = 'none';
+      document.getElementById('reportContent').innerHTML = '';
+      document.getElementById('warningsBox').classList.remove('visible');
+      document.getElementById('warningsBox').textContent = '';
+      document.getElementById('reportMeta').textContent = 'Analysing...';
+    }
+
+    // ── File upload ──
+    document.getElementById('fileInput').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const drop = document.getElementById('uploadDrop');
+      const status = document.getElementById('uploadStatus');
+      status.className = 'upload-status';
+      status.textContent = 'Uploading...';
+      status.style.display = 'block';
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const res = await fetch('/upload', { method: 'POST', body: formData });
+        const data = await res.json();
+        if (res.ok) {
+          drop.classList.add('has-file');
+          status.className = 'upload-status success';
+          status.textContent = `✓ ${data.message}`;
+        } else {
+          status.className = 'upload-status error';
+          status.textContent = `✗ ${data.error}`;
+        }
+      } catch (err) {
+        status.className = 'upload-status error';
+        status.textContent = `✗ Upload failed: ${err.message}`;
+      }
+    });
+
+    // ── Run analysis ──
+    function runAnalysis() {
+      const query = document.getElementById('queryInput').value.trim();
+      if (!query) {
+        document.getElementById('queryInput').focus();
+        return;
+      }
+
+      if (currentSource) { currentSource.close(); currentSource = null; }
+
+      resetPipeline();
+      const btn = document.getElementById('runBtn');
+      btn.classList.add('loading');
+      btn.disabled = true;
+
+      const url = `/stream?q=${encodeURIComponent(query)}`;
+      currentSource = new EventSource(url);
+
+      currentSource.onmessage = (e) => {
+        const event = JSON.parse(e.data);
+        handleEvent(event);
+      };
+
+      currentSource.onerror = () => {
+        currentSource.close();
+        currentSource = null;
+        setButtonIdle();
+      };
+    }
+
+    // ── Event dispatcher ──
+    function handleEvent(event) {
+      const { type, data } = event;
+
+      if (type === 'plan') {
+        handlePlan(data);
+      } else if (type === 'agent_start') {
+        handleAgentStart(data);
+      } else if (type === 'agent_thought') {
+        handleAgentThought(data);
+      } else if (type === 'agent_done') {
+        handleAgentDone(data);
+      } else if (type === 'agent_error') {
+        handleAgentError(data);
+      } else if (type === 'agent_skip') {
+        handleAgentSkip(data);
+      } else if (type === 'report') {
+        handleReport(data);
+      } else if (type === 'warnings') {
+        handleWarnings(data);
+      } else if (type === 'done') {
+        setButtonIdle();
+        if (currentSource) { currentSource.close(); currentSource = null; }
+        document.getElementById('reportMeta').textContent =
+          `Generated · ${new Date().toLocaleTimeString()}`;
+      } else if (type === 'error') {
+        showGlobalError(data.message);
+        setButtonIdle();
+      }
+    }
+
+    function handlePlan(data) {
+      const orch = document.getElementById('card-orchestrator');
+      orch.setAttribute('data-status', 'running');
+      expandCard('orchestrator');
+
+      if (data.pipeline) {
+        const steps = data.pipeline.map((s, i) => {
+          const arrow = i < data.pipeline.length - 1 ? '<span class="plan-arrow">→</span>' : '';
+          return `<span class="plan-step">${s}</span>${arrow}`;
+        }).join(' ');
+
+        document.getElementById('plan-content').innerHTML = `
+          <div style="font-size:12px; color: var(--text-secondary); margin-bottom:8px;">
+            <strong style="color:#a78bfa;">Job Family:</strong> ${data.job_family} &nbsp;·&nbsp;
+            <strong style="color:#a78bfa;">Region:</strong> ${data.region} &nbsp;·&nbsp;
+            <strong style="color:#a78bfa;">Type:</strong> ${data.question_type}
+          </div>
+          <div class="plan-pipeline">${steps}</div>
+        `;
+        orch.setAttribute('data-status', 'done');
+        document.getElementById('ring-orchestrator').textContent = '✓';
+      } else {
+        document.getElementById('plan-content').innerHTML =
+          `<span style="color: var(--text-secondary); font-size:11px;">${data.message || ''}</span>`;
+      }
+    }
+
+    function handleAgentStart(data) {
+      const key = AGENT_KEYS[data.agent];
+      if (!key) return;
+      const card = document.getElementById(`card-${key}`);
+      card.setAttribute('data-status', 'running');
+      expandCard(key);
+    }
+
+    function handleAgentThought(data) {
+      const key = AGENT_KEYS[data.agent];
+      if (!key) return;
+      const log = document.getElementById(`log-${key}`);
+      if (!log) return;
+
+      if (data.thought_type === 'tool_call') {
+        const inputStr = JSON.stringify(data.data.input || {})
+          .replace(/^{/, '(').replace(/}$/, ')').replace(/"/g, '');
+        const entry = document.createElement('div');
+        entry.className = 'log-call';
+        entry.innerHTML = `<span class="log-call-icon">▶</span><span>${data.data.tool}${inputStr}</span>`;
+        log.appendChild(entry);
+        log.scrollTop = log.scrollHeight;
+
+      } else if (data.thought_type === 'tool_result') {
+        const entry = document.createElement('div');
+        entry.className = 'log-result';
+        entry.innerHTML = `<span class="log-result-icon">↳</span><span>${data.data.result}</span>`;
+        log.appendChild(entry);
+        log.scrollTop = log.scrollHeight;
+
+      } else if (data.thought_type === 'thinking') {
+        const entry = document.createElement('div');
+        entry.className = 'log-thinking';
+        entry.textContent = `⟳ ${data.data.message}`;
+        log.appendChild(entry);
+        log.scrollTop = log.scrollHeight;
+      }
+    }
+
+    function handleAgentDone(data) {
+      const key = AGENT_KEYS[data.agent];
+      if (!key) return;
+      const card = document.getElementById(`card-${key}`);
+      card.setAttribute('data-status', 'done');
+      const ring = document.getElementById(`ring-${key}`);
+      if (ring) ring.textContent = '✓';
+      const sum = document.getElementById(`summary-${key}`);
+      if (sum && data.summary) sum.textContent = data.summary;
+    }
+
+    function handleAgentError(data) {
+      const key = AGENT_KEYS[data.agent];
+      if (!key) return;
+      const card = document.getElementById(`card-${key}`);
+      card.setAttribute('data-status', 'error');
+      const ring = document.getElementById(`ring-${key}`);
+      if (ring) ring.textContent = '✗';
+      const err = document.getElementById(`error-${key}`);
+      if (err) err.textContent = data.message;
+    }
+
+    function handleAgentSkip(data) {
+      const key = AGENT_KEYS[data.agent];
+      if (!key) return;
+      document.getElementById(`card-${key}`).setAttribute('data-status', 'skip');
+    }
+
+    function handleReport(data) {
+      document.getElementById('emptyState').style.display = 'none';
+      const content = document.getElementById('reportContent');
+      content.style.display = 'block';
+      content.innerHTML = marked.parse(data.markdown);
+      content.classList.add('fade-in');
+    }
+
+    function handleWarnings(data) {
+      if (!data.warnings || data.warnings.length === 0) return;
+      const box = document.getElementById('warningsBox');
+      box.innerHTML = '<strong>Warnings:</strong><br>' + data.warnings.map(w => `• ${w}`).join('<br>');
+      box.classList.add('visible');
+    }
+
+    function showGlobalError(msg) {
+      document.getElementById('reportMeta').textContent = 'Error occurred';
+      const box = document.getElementById('warningsBox');
+      box.innerHTML = `<strong>Error:</strong> ${msg}`;
+      box.classList.add('visible');
+    }
+
+    function setButtonIdle() {
+      const btn = document.getElementById('runBtn');
+      btn.classList.remove('loading');
+      btn.disabled = false;
+    }
+
+    // Allow Enter (without shift) to submit
+    document.getElementById('queryInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        runAnalysis();
+      }
+    });
+  </script>
+</body>
+</html>
