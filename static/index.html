@@ -5,177 +5,284 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CareerAI — Workforce Intelligence</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --sidebar-bg: #0d1117;
-      --sidebar-border: #21262d;
-      --card-bg: #161b22;
-      --card-border: #30363d;
-      --accent: #7c3aed;
-      --accent-dim: #5b21b6;
-      --accent-glow: rgba(124, 58, 237, 0.3);
-      --text-primary: #f0f6fc;
-      --text-secondary: #8b949e;
-      --text-muted: #484f58;
-      --success: #059669;
-      --success-bg: rgba(5, 150, 105, 0.1);
-      --warning: #d97706;
-      --error: #dc2626;
-      --error-bg: rgba(220, 38, 38, 0.1);
-      --report-bg: #ffffff;
-      --report-section-bg: #f8fafc;
-      --report-border: #e2e8f0;
-      --report-text: #1e293b;
-      --report-secondary: #64748b;
+      --primary:       #6C5CE7;
+      --accent:        #8B7CF6;
+      --bg:            #0F1117;
+      --panel:         #151922;
+      --card:          #1C2130;
+      --border:        #2A3143;
+      --text-primary:  #E8ECF4;
+      --text-secondary:#9AA4B2;
+      --success:       #3DDC97;
+      --warning:       #F5A623;
+      --error:         #FF6B6B;
+      --info:          #4DA3FF;
+      --primary-glow:  rgba(108, 92, 231, 0.22);
+      --success-bg:    rgba(61, 220, 151, 0.08);
+      --error-bg:      rgba(255, 107, 107, 0.08);
+      --warning-bg:    rgba(245, 166, 35, 0.08);
     }
 
-    html, body { height: 100%; font-family: 'Inter', -apple-system, sans-serif; }
+    html, body {
+      height: 100%;
+      font-family: 'Open Sans', -apple-system, sans-serif;
+      font-size: 14px;
+      color: var(--text-primary);
+      background: var(--bg);
+    }
 
     body {
       display: flex;
       flex-direction: column;
-      height: 100vh;
-      background: var(--sidebar-bg);
-      color: var(--text-primary);
       overflow: hidden;
+      height: 100vh;
     }
 
-    /* ── Navbar ── */
-    .navbar {
+    /* Scrollbars */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    * { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+
+    /* ── HEADER ── */
+    .header {
+      height: 60px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
-      justify-content: space-between;
       padding: 0 24px;
-      height: 56px;
-      background: var(--sidebar-bg);
-      border-bottom: 1px solid var(--sidebar-border);
+      gap: 16px;
       flex-shrink: 0;
-      z-index: 10;
+      z-index: 100;
     }
 
-    .navbar-brand {
+    .header-brand {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text-primary);
+      gap: 12px;
+      flex-shrink: 0;
     }
 
-    .navbar-logo {
-      width: 28px;
-      height: 28px;
-      background: linear-gradient(135deg, var(--accent), #4f46e5);
-      border-radius: 6px;
+    .header-logo {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--primary) 0%, #4B3FCC 100%);
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 13px;
-      font-weight: 700;
       color: white;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: -0.5px;
+      box-shadow: 0 4px 14px var(--primary-glow);
+      flex-shrink: 0;
     }
 
-    .navbar-tagline {
-      font-size: 12px;
-      color: var(--text-muted);
+    .header-brand-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.3px;
+      line-height: 1.2;
+    }
+
+    .header-brand-tagline {
+      font-size: 11px;
+      color: var(--text-secondary);
       font-weight: 400;
+      line-height: 1.2;
     }
 
-    .navbar-status {
+    .header-sep {
+      width: 1px;
+      height: 28px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+
+    .env-badge {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
+      padding: 4px 10px;
+      background: rgba(108, 92, 231, 0.1);
+      border: 1px solid rgba(108, 92, 231, 0.25);
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.03em;
+      flex-shrink: 0;
+    }
+
+    .header-spacer { flex: 1; }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 13px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
       font-size: 12px;
+      font-weight: 500;
       color: var(--text-secondary);
+      flex-shrink: 0;
     }
 
     .status-dot {
-      width: 6px;
-      height: 6px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background: var(--success);
+      flex-shrink: 0;
+      transition: background 0.3s;
     }
 
-    /* ── Layout ── */
-    .layout {
+    .status-dot.running {
+      background: var(--primary);
+      animation: pulse-dot 1.3s ease-in-out infinite;
+    }
+
+    .header-actions {
       display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: 4px;
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .icon-btn:hover {
+      background: var(--card);
+      color: var(--text-primary);
+      border-color: rgba(108, 92, 231, 0.4);
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--primary), #4B3FCC);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: white;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* ── APP LAYOUT ── */
+    .app-layout {
       flex: 1;
+      display: flex;
       overflow: hidden;
     }
 
-    /* ── Sidebar ── */
+    /* ── LEFT SIDEBAR ── */
     .sidebar {
-      width: 400px;
+      width: 280px;
       flex-shrink: 0;
-      background: var(--sidebar-bg);
-      border-right: 1px solid var(--sidebar-border);
+      background: var(--panel);
+      border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
 
-    .sidebar-inner {
+    .sidebar-scroll {
       flex: 1;
       overflow-y: auto;
-      padding: 20px 16px;
-      scrollbar-width: thin;
-      scrollbar-color: var(--sidebar-border) transparent;
+      padding: 20px 16px 24px;
     }
 
-    .sidebar-inner::-webkit-scrollbar { width: 4px; }
-    .sidebar-inner::-webkit-scrollbar-track { background: transparent; }
-    .sidebar-inner::-webkit-scrollbar-thumb { background: var(--sidebar-border); border-radius: 2px; }
-
-    /* ── Query Section ── */
-    .section-label {
-      font-size: 10px;
+    .field-label {
+      font-size: 11px;
       font-weight: 600;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--text-muted);
+      color: var(--text-secondary);
       margin-bottom: 8px;
     }
 
     .query-textarea {
       width: 100%;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
+      background: var(--card);
+      border: 1px solid var(--border);
       border-radius: 8px;
       padding: 12px 14px;
       color: var(--text-primary);
-      font-family: 'Inter', sans-serif;
+      font-family: 'Open Sans', sans-serif;
       font-size: 13px;
-      line-height: 1.5;
+      line-height: 1.6;
       resize: none;
-      min-height: 80px;
-      transition: border-color 0.15s;
+      min-height: 96px;
+      transition: border-color 0.15s, box-shadow 0.15s;
       outline: none;
     }
 
-    .query-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
-    .query-textarea::placeholder { color: var(--text-muted); }
-
-    /* ── Upload Section ── */
-    .upload-section {
-      margin-top: 12px;
+    .query-textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-glow);
     }
+
+    .query-textarea::placeholder {
+      color: var(--text-secondary);
+      opacity: 0.55;
+    }
+
+    .query-textarea.invalid {
+      border-color: var(--error);
+      animation: shake 0.3s ease;
+    }
+
+    /* Upload */
+    .upload-zone { margin-top: 16px; }
 
     .upload-drop {
-      border: 1px dashed var(--card-border);
+      border: 1.5px dashed var(--border);
       border-radius: 8px;
-      padding: 12px 14px;
+      padding: 14px 12px;
       text-align: center;
       cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
+      transition: all 0.15s;
       position: relative;
+      background: var(--card);
     }
 
-    .upload-drop:hover { border-color: var(--accent); background: rgba(124, 58, 237, 0.05); }
-    .upload-drop.has-file { border-color: var(--success); background: var(--success-bg); }
+    .upload-drop:hover {
+      border-color: var(--primary);
+      background: rgba(108, 92, 231, 0.04);
+    }
+
+    .upload-drop.has-file {
+      border-color: var(--success);
+      border-style: solid;
+      background: var(--success-bg);
+    }
 
     .upload-drop input[type="file"] {
       position: absolute;
@@ -186,39 +293,52 @@
       height: 100%;
     }
 
-    .upload-icon { font-size: 18px; margin-bottom: 4px; }
+    .upload-drop-icon {
+      color: var(--text-secondary);
+      display: flex;
+      justify-content: center;
+      margin-bottom: 6px;
+    }
 
-    .upload-text {
+    .upload-drop.has-file .upload-drop-icon { color: var(--success); }
+
+    .upload-drop-text {
       font-size: 12px;
+      font-weight: 500;
       color: var(--text-secondary);
     }
 
-    .upload-hint {
-      font-size: 10px;
-      color: var(--text-muted);
-      margin-top: 4px;
+    .upload-drop-hint {
+      font-size: 11px;
+      color: var(--text-secondary);
+      opacity: 0.5;
+      margin-top: 3px;
     }
 
-    .upload-status {
+    .upload-feedback {
       margin-top: 8px;
       font-size: 12px;
-      padding: 6px 10px;
+      font-weight: 500;
+      padding: 7px 10px;
       border-radius: 6px;
       display: none;
+      align-items: center;
+      gap: 6px;
     }
 
-    .upload-status.success { background: var(--success-bg); color: var(--success); display: block; }
-    .upload-status.error { background: var(--error-bg); color: var(--error); display: block; }
+    .upload-feedback.success { background: var(--success-bg); color: var(--success); display: flex; }
+    .upload-feedback.error   { background: var(--error-bg);   color: var(--error);   display: flex; }
 
-    /* ── Run Button ── */
+    /* Run button */
     .run-btn {
       width: 100%;
-      margin-top: 12px;
-      padding: 10px 16px;
-      background: linear-gradient(135deg, var(--accent), #4f46e5);
+      margin-top: 16px;
+      padding: 11px 20px;
+      background: linear-gradient(135deg, var(--primary) 0%, #4B3FCC 100%);
       border: none;
       border-radius: 8px;
       color: white;
+      font-family: 'Open Sans', sans-serif;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
@@ -226,823 +346,1342 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: opacity 0.15s, transform 0.1s;
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+      box-shadow: 0 4px 14px var(--primary-glow);
+      letter-spacing: 0.01em;
     }
 
-    .run-btn:hover { opacity: 0.9; }
-    .run-btn:active { transform: scale(0.98); }
-    .run-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .run-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 22px rgba(108, 92, 231, 0.4);
+    }
 
-    .run-btn .spinner {
+    .run-btn:active:not(:disabled) { transform: translateY(0); }
+
+    .run-btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-spinner {
       width: 14px;
       height: 14px;
       border: 2px solid rgba(255,255,255,0.3);
       border-top-color: white;
       border-radius: 50%;
-      animation: spin 0.6s linear infinite;
+      animation: spin 0.7s linear infinite;
       display: none;
-    }
-
-    .run-btn.loading .spinner { display: block; }
-    .run-btn.loading .btn-text { display: none; }
-
-    /* ── Pipeline Section ── */
-    .pipeline-section { margin-top: 20px; }
-
-    .pipeline-divider {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .pipeline-divider .section-label { margin: 0; }
-
-    .pipeline-divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--sidebar-border);
-    }
-
-    /* ── Agent Card ── */
-    .agent-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 8px;
-      margin-bottom: 8px;
-      overflow: hidden;
-      transition: border-color 0.2s;
-    }
-
-    .agent-card[data-status="running"] { border-color: var(--accent); }
-    .agent-card[data-status="done"] { border-color: rgba(5, 150, 105, 0.4); }
-    .agent-card[data-status="error"] { border-color: rgba(220, 38, 38, 0.4); }
-
-    .agent-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    /* Status ring */
-    .status-ring {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      border: 2px solid var(--text-muted);
       flex-shrink: 0;
+    }
+
+    .run-btn.loading .btn-spinner { display: block; }
+    .run-btn.loading .btn-label   { display: none; }
+
+    /* Recent analyses */
+    .recent-section {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .recent-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-top: 8px;
+    }
+
+    .recent-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.12s;
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .recent-item:hover {
+      background: var(--card);
+      color: var(--text-primary);
+    }
+
+    .recent-item-icon { color: var(--text-secondary); flex-shrink: 0; margin-top: 1px; }
+
+    .recent-empty {
+      font-size: 12px;
+      color: var(--text-secondary);
+      opacity: 0.45;
+      padding: 4px 10px;
+    }
+
+    /* ── MAIN WORKSPACE ── */
+    .workspace {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--bg);
+      min-width: 0;
+    }
+
+    .workspace-body {
+      flex: 1;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    /* Empty state */
+    .empty-state {
+      position: absolute;
+      inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 10px;
-      transition: border-color 0.2s, background 0.2s;
+      padding: 40px 32px;
     }
 
-    [data-status="running"] .status-ring {
-      border-color: var(--accent);
-      animation: pulse-ring 1.2s ease-in-out infinite;
+    .empty-card {
+      max-width: 540px;
+      width: 100%;
+      text-align: center;
     }
 
-    [data-status="done"] .status-ring {
-      border-color: var(--success);
-      background: var(--success);
+    .empty-logo-wrap {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--primary), #4B3FCC);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      box-shadow: 0 8px 32px var(--primary-glow);
       color: white;
     }
 
-    [data-status="error"] .status-ring {
-      border-color: var(--error);
-      background: var(--error);
-      color: white;
+    .empty-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.5px;
+      margin-bottom: 12px;
+      line-height: 1.2;
     }
 
-    [data-status="skip"] .status-ring {
-      border-style: dashed;
+    .empty-subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      max-width: 430px;
+      margin: 0 auto 32px;
     }
 
-    .agent-name {
-      font-size: 12px;
+    .example-label {
+      font-size: 11px;
       font-weight: 600;
-      flex: 1;
+      color: var(--text-secondary);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .example-queries {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-align: left;
+    }
+
+    .example-query {
+      padding: 12px 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .example-query:hover {
+      border-color: var(--primary);
+      color: var(--text-primary);
+      background: rgba(108, 92, 231, 0.05);
+      transform: translateX(2px);
+    }
+
+    .example-query-icon { color: var(--primary); flex-shrink: 0; }
+
+    /* ── PROGRESS VIEW ── */
+    .progress-view {
+      display: none;
+      padding: 40px;
+    }
+
+    .progress-view.active { display: block; }
+
+    .progress-head {
+      margin-bottom: 32px;
+    }
+
+    .progress-head-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    .progress-head-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.3px;
+      margin-bottom: 6px;
+    }
+
+    .progress-head-query {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    /* Workflow steps timeline */
+    .workflow-steps {
+      display: flex;
+      flex-direction: column;
+      max-width: 680px;
+    }
+
+    .workflow-step {
+      display: flex;
+      gap: 20px;
+      position: relative;
+    }
+
+    /* connector line */
+    .workflow-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 46px;
+      bottom: 0;
+      width: 2px;
+      background: var(--border);
+      transition: background 0.4s;
+    }
+
+    .workflow-step.step-done:not(:last-child)::after {
+      background: rgba(61, 220, 151, 0.35);
+    }
+
+    .workflow-step.step-running:not(:last-child)::after {
+      background: linear-gradient(to bottom, rgba(108,92,231,0.6), var(--border));
+    }
+
+    .step-indicator {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--card);
+      border: 2px solid var(--border);
+      transition: all 0.3s;
+      z-index: 1;
+      position: relative;
+    }
+
+    .step-num {
+      font-size: 13px;
+      font-weight: 700;
       color: var(--text-secondary);
       transition: color 0.2s;
     }
 
-    [data-status="running"] .agent-name,
-    [data-status="done"] .agent-name { color: var(--text-primary); }
+    .workflow-step.step-running .step-indicator {
+      border-color: var(--primary);
+      background: rgba(108, 92, 231, 0.1);
+      animation: ring-pulse 1.6s ease-in-out infinite;
+    }
 
-    .agent-badge {
-      font-size: 10px;
-      padding: 2px 7px;
-      border-radius: 20px;
-      background: rgba(124, 58, 237, 0.1);
+    .workflow-step.step-running .step-num { color: var(--primary); }
+
+    .workflow-step.step-done .step-indicator {
+      border-color: var(--success);
+      background: rgba(61, 220, 151, 0.08);
+    }
+
+    .workflow-step.step-error .step-indicator {
+      border-color: var(--error);
+      background: var(--error-bg);
+    }
+
+    .workflow-step.step-skip .step-indicator { opacity: 0.35; }
+
+    .step-body {
+      flex: 1;
+      padding-bottom: 20px;
+    }
+
+    .step-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 18px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .workflow-step.step-running .step-card {
+      border-color: rgba(108, 92, 231, 0.35);
+      box-shadow: 0 0 0 1px rgba(108,92,231,0.08), 0 4px 20px rgba(0,0,0,0.25);
+    }
+
+    .workflow-step.step-done .step-card {
+      border-color: rgba(61, 220, 151, 0.2);
+    }
+
+    .workflow-step.step-skip .step-card { opacity: 0.45; }
+
+    .step-card-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .step-icon-wrap {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(108, 92, 231, 0.1);
       color: var(--accent);
-      font-weight: 500;
-      white-space: nowrap;
+      flex-shrink: 0;
+      transition: all 0.3s;
     }
 
-    .agent-chevron {
-      font-size: 10px;
-      color: var(--text-muted);
-      transition: transform 0.2s;
+    .workflow-step.step-done  .step-icon-wrap { background: rgba(61,220,151,0.1);  color: var(--success); }
+    .workflow-step.step-error .step-icon-wrap { background: var(--error-bg);        color: var(--error); }
+
+    .step-info { flex: 1; min-width: 0; }
+
+    .step-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
     }
 
-    .agent-card.expanded .agent-chevron { transform: rotate(180deg); }
-
-    /* Agent body */
-    .agent-body { display: none; padding: 0 12px 10px; }
-    .agent-card.expanded .agent-body { display: block; }
-
-    /* Plan block (Orchestrator) */
-    .plan-block {
-      background: rgba(124, 58, 237, 0.08);
-      border: 1px solid rgba(124, 58, 237, 0.2);
-      border-radius: 6px;
-      padding: 10px 12px;
+    .step-desc {
       font-size: 12px;
-      line-height: 1.6;
+      color: var(--text-secondary);
+      margin-top: 2px;
+      line-height: 1.4;
+    }
+
+    .step-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 20px;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .badge-pending { background: rgba(42,49,67,0.8); color: var(--text-secondary); border: 1px solid var(--border); }
+    .badge-running { background: rgba(108,92,231,0.14); color: var(--accent); border: 1px solid rgba(108,92,231,0.3); animation: badge-blink 1.5s ease-in-out infinite; }
+    .badge-done    { background: var(--success-bg); color: var(--success); border: 1px solid rgba(61,220,151,0.3); }
+    .badge-error   { background: var(--error-bg);   color: var(--error);   border: 1px solid rgba(255,107,107,0.3); }
+    .badge-skip    { background: rgba(42,49,67,0.5); color: var(--text-secondary); border: 1px solid var(--border); opacity: 0.6; }
+
+    .step-summary {
+      margin-top: 10px;
+      padding: 9px 12px;
+      background: var(--success-bg);
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--success);
+      line-height: 1.55;
+      display: none;
+    }
+
+    .workflow-step.step-done .step-summary { display: block; }
+
+    .step-error-msg {
+      margin-top: 10px;
+      padding: 9px 12px;
+      background: var(--error-bg);
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--error);
+      line-height: 1.55;
+      display: none;
+    }
+
+    .workflow-step.step-error .step-error-msg { display: block; }
+
+    /* ── REPORT VIEW ── */
+    .report-view {
+      display: none;
+      padding: 40px;
+    }
+
+    .report-view.active { display: block; }
+
+    .report-top-bar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      gap: 16px;
+    }
+
+    .report-top-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 5px;
+    }
+
+    .report-top-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.3px;
+      line-height: 1.3;
+    }
+
+    .report-top-meta {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .report-sections {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-width: 820px;
+    }
+
+    .report-section-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      opacity: 0;
+      animation: fadeInUp 0.4s ease forwards;
+    }
+
+    .report-section-card:nth-child(1) { animation-delay: 0.04s; }
+    .report-section-card:nth-child(2) { animation-delay: 0.10s; }
+    .report-section-card:nth-child(3) { animation-delay: 0.16s; }
+    .report-section-card:nth-child(4) { animation-delay: 0.22s; }
+    .report-section-card:nth-child(5) { animation-delay: 0.28s; }
+    .report-section-card:nth-child(6) { animation-delay: 0.34s; }
+    .report-section-card:nth-child(7) { animation-delay: 0.40s; }
+
+    .report-section-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 15px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .report-section-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .ic-purple  { background: rgba(108,92,231,0.12); color: var(--accent); }
+    .ic-green   { background: rgba(61,220,151,0.1);  color: var(--success); }
+    .ic-blue    { background: rgba(77,163,255,0.1);  color: var(--info); }
+    .ic-orange  { background: rgba(245,166,35,0.1);  color: var(--warning); }
+    .ic-red     { background: rgba(255,107,107,0.1); color: var(--error); }
+
+    .report-section-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .report-section-body {
+      padding: 20px;
+      font-size: 14px;
+      line-height: 1.8;
       color: var(--text-secondary);
     }
 
-    .plan-pipeline {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-top: 8px;
+    .report-section-body h1,
+    .report-section-body h2 { display: none; } /* hidden — used as section title above */
+
+    .report-section-body h3 {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin: 16px 0 8px;
     }
 
-    .plan-step {
-      font-size: 10px;
-      padding: 2px 8px;
-      background: rgba(124, 58, 237, 0.15);
-      color: #a78bfa;
-      border-radius: 20px;
-      font-weight: 500;
+    .report-section-body h3:first-child { margin-top: 0; }
+
+    .report-section-body p { margin-bottom: 10px; }
+    .report-section-body p:last-child { margin-bottom: 0; }
+    .report-section-body strong { color: var(--text-primary); font-weight: 600; }
+    .report-section-body em { color: var(--accent); font-style: normal; font-weight: 500; }
+
+    .report-section-body ul,
+    .report-section-body ol { padding-left: 20px; margin-bottom: 10px; }
+
+    .report-section-body li { margin-bottom: 4px; }
+
+    .report-section-body code {
+      background: var(--panel);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: var(--accent);
+      font-family: 'Courier New', monospace;
     }
 
-    .plan-arrow { color: var(--text-muted); font-size: 10px; }
-
-    /* Tool log */
-    .tool-log {
-      font-family: 'JetBrains Mono', 'Fira Code', monospace;
-      font-size: 11px;
-      line-height: 1.6;
-      max-height: 200px;
-      overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: var(--sidebar-border) transparent;
-    }
-
-    .tool-log::-webkit-scrollbar { width: 3px; }
-    .tool-log::-webkit-scrollbar-thumb { background: var(--sidebar-border); }
-
-    .log-call {
-      display: flex;
-      gap: 6px;
-      color: #60a5fa;
-      margin-top: 6px;
-    }
-
-    .log-call-icon { color: var(--accent); flex-shrink: 0; }
-
-    .log-result {
-      display: flex;
-      gap: 6px;
-      color: var(--text-muted);
-      padding-left: 16px;
-      margin-top: 2px;
-    }
-
-    .log-result-icon { color: var(--success); flex-shrink: 0; }
-
-    .log-thinking {
-      color: #fbbf24;
-      font-size: 11px;
-      margin-top: 6px;
-      font-style: italic;
-    }
-
-    /* Agent summary */
-    .agent-summary {
-      margin-top: 8px;
-      padding: 8px 10px;
-      background: var(--success-bg);
-      border-radius: 6px;
-      font-size: 11px;
-      color: #6ee7b7;
-      line-height: 1.5;
-      display: none;
-    }
-
-    [data-status="done"] .agent-summary { display: block; }
-
-    .agent-error-msg {
-      margin-top: 8px;
-      padding: 8px 10px;
-      background: var(--error-bg);
-      border-radius: 6px;
-      font-size: 11px;
-      color: #fca5a5;
-      display: none;
-    }
-
-    [data-status="error"] .agent-error-msg { display: block; }
-
-    /* ── Main Panel ── */
-    .main-panel {
-      flex: 1;
-      background: var(--report-bg);
+    /* ── RIGHT PANEL ── */
+    .right-panel {
+      width: 300px;
+      flex-shrink: 0;
+      background: var(--panel);
+      border-left: 1px solid var(--border);
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
 
-    .report-header {
-      padding: 20px 32px 16px;
-      border-bottom: 1px solid var(--report-border);
+    .rp-header {
+      padding: 15px 16px 12px;
+      border-bottom: 1px solid var(--border);
       flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
     }
 
-    .report-title {
-      font-size: 14px;
+    .rp-title {
+      font-size: 11px;
       font-weight: 600;
-      color: var(--report-text);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
     }
 
-    .report-meta {
-      font-size: 12px;
-      color: var(--report-secondary);
-    }
-
-    .report-body {
+    .rp-scroll {
       flex: 1;
       overflow-y: auto;
-      padding: 32px;
-      scrollbar-width: thin;
-      scrollbar-color: var(--report-border) transparent;
+      padding: 12px;
     }
 
-    .report-body::-webkit-scrollbar { width: 6px; }
-    .report-body::-webkit-scrollbar-thumb { background: var(--report-border); border-radius: 3px; }
-
-    /* Empty state */
-    .empty-state {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      background-image: radial-gradient(circle at 1px 1px, #e2e8f0 1px, transparent 0);
-      background-size: 24px 24px;
-    }
-
-    .empty-icon {
-      width: 56px;
-      height: 56px;
-      background: linear-gradient(135deg, var(--accent), #4f46e5);
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      margin-bottom: 16px;
-      box-shadow: 0 8px 24px var(--accent-glow);
-    }
-
-    .empty-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--report-text);
+    /* Agent activity card */
+    .agent-ac {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
       margin-bottom: 8px;
+      transition: border-color 0.25s, box-shadow 0.25s;
     }
 
-    .empty-sub {
-      font-size: 13px;
-      color: var(--report-secondary);
-      max-width: 320px;
-      line-height: 1.6;
+    .agent-ac[data-status="running"] {
+      border-color: rgba(108,92,231,0.4);
+      box-shadow: 0 0 0 1px rgba(108,92,231,0.08);
     }
 
-    /* Report content (from marked.js) */
-    .report-content h1 {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--report-text);
-      margin-bottom: 24px;
-      padding-bottom: 12px;
-      border-bottom: 2px solid var(--report-border);
-    }
+    .agent-ac[data-status="done"]  { border-color: rgba(61,220,151,0.22); }
+    .agent-ac[data-status="error"] { border-color: rgba(255,107,107,0.22); }
+    .agent-ac[data-status="skip"]  { opacity: 0.4; }
 
-    .report-content h2 {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--report-text);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin: 28px 0 12px;
+    .agent-ac-top {
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .report-content h2::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--report-border);
+    .agent-ac-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(108,92,231,0.1);
+      color: var(--accent);
+      flex-shrink: 0;
+      transition: all 0.25s;
     }
 
-    .report-content p {
-      font-size: 14px;
-      line-height: 1.8;
-      color: #334155;
-      margin-bottom: 12px;
-      padding: 16px 20px;
-      background: var(--report-section-bg);
-      border-left: 3px solid var(--accent);
-      border-radius: 0 8px 8px 0;
-    }
+    .agent-ac[data-status="done"]    .agent-ac-icon { background: rgba(61,220,151,0.08); color: var(--success); }
+    .agent-ac[data-status="running"] .agent-ac-icon { animation: icon-throb 1.4s ease-in-out infinite; }
+    .agent-ac[data-status="error"]   .agent-ac-icon { background: var(--error-bg); color: var(--error); }
 
-    .report-content em { font-style: italic; color: var(--report-secondary); }
-    .report-content strong { font-weight: 600; color: var(--report-text); }
+    .agent-ac-info { flex: 1; min-width: 0; }
 
-    /* Warnings */
-    .warnings-box {
-      margin-top: 16px;
-      padding: 12px 16px;
-      background: rgba(217, 119, 6, 0.08);
-      border: 1px solid rgba(217, 119, 6, 0.3);
-      border-radius: 8px;
+    .agent-ac-name {
       font-size: 12px;
-      color: #d97706;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .agent-ac-role {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .agent-ac-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--border);
+      flex-shrink: 0;
+      transition: background 0.25s;
+    }
+
+    .agent-ac[data-status="running"] .agent-ac-dot { background: var(--primary); animation: pulse-dot 1.2s ease-in-out infinite; }
+    .agent-ac[data-status="done"]    .agent-ac-dot { background: var(--success); }
+    .agent-ac[data-status="error"]   .agent-ac-dot { background: var(--error); }
+
+    .agent-ac-activity {
+      margin-top: 7px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.3s ease;
+    }
+
+    .agent-ac[data-status="running"] .agent-ac-activity,
+    .agent-ac[data-status="done"]    .agent-ac-activity { max-height: 64px; }
+
+    .agent-ac-summary {
+      margin-top: 8px;
+      padding: 7px 10px;
+      background: var(--success-bg);
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--success);
+      line-height: 1.5;
       display: none;
     }
 
-    .warnings-box.visible { display: block; }
+    .agent-ac[data-status="done"] .agent-ac-summary { display: block; }
 
-    /* Animations */
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    @keyframes pulse-ring {
-      0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
-      50% { box-shadow: 0 0 0 4px var(--accent-glow); }
+    .agent-ac-error {
+      margin-top: 8px;
+      padding: 7px 10px;
+      background: var(--error-bg);
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--error);
+      line-height: 1.5;
+      display: none;
     }
 
-    @keyframes fade-in {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
+    .agent-ac[data-status="error"] .agent-ac-error { display: block; }
+
+    /* Pipeline progress bar at bottom of right panel */
+    .rp-progress {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+      display: none;
     }
 
-    .fade-in { animation: fade-in 0.3s ease forwards; }
+    .rp-progress.visible { display: block; }
+
+    .rp-progress-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-bottom: 7px;
+    }
+
+    .rp-progress-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .rp-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes spin     { to { transform: rotate(360deg); } }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.6; transform: scale(0.8); }
+    }
+
+    @keyframes ring-pulse {
+      0%, 100% { box-shadow: 0 0 0 3px rgba(108,92,231,0.12); }
+      50%       { box-shadow: 0 0 0 7px rgba(108,92,231,0.06); }
+    }
+
+    @keyframes badge-blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.65; }
+    }
+
+    @keyframes icon-throb {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.6; }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25%       { transform: translateX(-4px); }
+      75%       { transform: translateX(4px); }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Navbar -->
-  <nav class="navbar">
-    <div class="navbar-brand">
-      <div class="navbar-logo">CA</div>
+  <!-- ── HEADER ── -->
+  <header class="header">
+    <div class="header-brand">
+      <div class="header-logo">CA</div>
       <div>
-        CareerAI
-        <div class="navbar-tagline">Workforce Intelligence Platform</div>
+        <div class="header-brand-name">CareerAI</div>
+        <div class="header-brand-tagline">Workforce Intelligence Platform</div>
       </div>
     </div>
-    <div class="navbar-status">
-      <div class="status-dot"></div>
-      Multi-Agent System · 5 Agents Active
+
+    <div class="header-sep"></div>
+
+    <div class="env-badge">
+      <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      PROTOTYPE
     </div>
-  </nav>
 
-  <!-- Layout -->
-  <div class="layout">
+    <div class="header-spacer"></div>
 
-    <!-- Sidebar -->
+    <div class="status-pill">
+      <div class="status-dot" id="headerDot"></div>
+      <span id="headerText">Multi-Agent Intelligence Ready</span>
+    </div>
+
+    <div class="header-actions">
+      <button class="icon-btn" title="Settings">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+      <div class="avatar">HR</div>
+    </div>
+  </header>
+
+  <!-- ── APP LAYOUT ── -->
+  <div class="app-layout">
+
+    <!-- LEFT SIDEBAR -->
     <aside class="sidebar">
-      <div class="sidebar-inner">
+      <div class="sidebar-scroll">
 
-        <!-- Query -->
-        <div class="section-label">Workforce Query</div>
+        <div class="field-label">Workforce Query</div>
         <textarea
           id="queryInput"
           class="query-textarea"
-          rows="3"
+          rows="4"
           placeholder="e.g. Should we increase compensation for software engineers in Ireland next year?"
         ></textarea>
 
-        <!-- Upload -->
-        <div class="upload-section">
-          <div class="section-label" style="margin-top:12px;">Salary Data (Optional)</div>
+        <div class="upload-zone">
+          <div class="field-label" style="margin-top:16px;">
+            Salary Data
+            <span style="text-transform:none;letter-spacing:0;font-weight:400;font-size:10px;color:var(--text-secondary);margin-left:4px;">· Optional</span>
+          </div>
           <div class="upload-drop" id="uploadDrop">
             <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" />
-            <div class="upload-icon">📂</div>
-            <div class="upload-text">Upload salary CSV or Excel</div>
-            <div class="upload-hint">Required columns: job_family · region · salary · year</div>
+            <div class="upload-drop-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+            </div>
+            <div class="upload-drop-text">Upload salary CSV or Excel</div>
+            <div class="upload-drop-hint">Required: job_family · region · salary · year</div>
           </div>
-          <div class="upload-status" id="uploadStatus"></div>
+          <div class="upload-feedback" id="uploadFeedback"></div>
         </div>
 
-        <!-- Run Button -->
         <button class="run-btn" id="runBtn" onclick="runAnalysis()">
-          <div class="spinner"></div>
-          <span class="btn-text">▶ Run Analysis</span>
+          <div class="btn-spinner"></div>
+          <span class="btn-label" style="display:flex;align-items:center;gap:8px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Run Analysis
+          </span>
         </button>
 
-        <!-- Pipeline -->
-        <div class="pipeline-section">
-          <div class="pipeline-divider">
-            <div class="section-label">Agent Pipeline</div>
+        <div class="recent-section">
+          <div class="field-label">Recent Analyses</div>
+          <div class="recent-list" id="recentList">
+            <div class="recent-empty">No recent analyses yet</div>
           </div>
+        </div>
 
-          <!-- Orchestrator card -->
-          <div class="agent-card" id="card-orchestrator" data-status="pending">
-            <div class="agent-header" onclick="toggleCard('orchestrator')">
-              <div class="status-ring" id="ring-orchestrator">◎</div>
-              <div class="agent-name">Orchestrator</div>
-              <div class="agent-badge">Planner</div>
-              <div class="agent-chevron">▾</div>
+      </div>
+    </aside>
+
+    <!-- MAIN WORKSPACE -->
+    <main class="workspace">
+      <div class="workspace-body" id="workspaceBody">
+
+        <!-- Empty state -->
+        <div class="empty-state" id="emptyState">
+          <div class="empty-card">
+            <div class="empty-logo-wrap">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
             </div>
-            <div class="agent-body" id="body-orchestrator">
-              <div class="plan-block" id="plan-content">
-                <span style="color: var(--text-muted); font-size:11px;">Awaiting query...</span>
+            <div class="empty-title">Workforce Intelligence Ready</div>
+            <div class="empty-subtitle">Ask a workforce strategy question and our multi-agent system will analyze market data, attrition risk, financial impact, and generate an executive recommendation.</div>
+            <div class="example-label">Try an example</div>
+            <div class="example-queries">
+              <div class="example-query" onclick="useExample(this)">
+                <span class="example-query-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </span>
+                <span>Should we increase compensation for engineers in Ireland?</span>
+              </div>
+              <div class="example-query" onclick="useExample(this)">
+                <span class="example-query-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </span>
+                <span>Which teams are at highest risk of attrition?</span>
+              </div>
+              <div class="example-query" onclick="useExample(this)">
+                <span class="example-query-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                </span>
+                <span>What is the financial impact of a 6% salary adjustment?</span>
               </div>
             </div>
           </div>
-
-          <!-- Research Agent -->
-          <div class="agent-card" id="card-research" data-status="pending">
-            <div class="agent-header" onclick="toggleCard('research')">
-              <div class="status-ring" id="ring-research"></div>
-              <div class="agent-name">Research Agent</div>
-              <div class="agent-badge">Market Intel</div>
-              <div class="agent-chevron">▾</div>
-            </div>
-            <div class="agent-body" id="body-research">
-              <div class="tool-log" id="log-research"></div>
-              <div class="agent-summary" id="summary-research"></div>
-              <div class="agent-error-msg" id="error-research"></div>
-            </div>
-          </div>
-
-          <!-- Workforce Analytics Agent -->
-          <div class="agent-card" id="card-analytics" data-status="pending">
-            <div class="agent-header" onclick="toggleCard('analytics')">
-              <div class="status-ring" id="ring-analytics"></div>
-              <div class="agent-name">Workforce Analytics Agent</div>
-              <div class="agent-badge">Attrition</div>
-              <div class="agent-chevron">▾</div>
-            </div>
-            <div class="agent-body" id="body-analytics">
-              <div class="tool-log" id="log-analytics"></div>
-              <div class="agent-summary" id="summary-analytics"></div>
-              <div class="agent-error-msg" id="error-analytics"></div>
-            </div>
-          </div>
-
-          <!-- Financial Impact Agent -->
-          <div class="agent-card" id="card-financial" data-status="pending">
-            <div class="agent-header" onclick="toggleCard('financial')">
-              <div class="status-ring" id="ring-financial"></div>
-              <div class="agent-name">Financial Impact Agent</div>
-              <div class="agent-badge">Modelling</div>
-              <div class="agent-chevron">▾</div>
-            </div>
-            <div class="agent-body" id="body-financial">
-              <div class="tool-log" id="log-financial"></div>
-              <div class="agent-summary" id="summary-financial"></div>
-              <div class="agent-error-msg" id="error-financial"></div>
-            </div>
-          </div>
-
-          <!-- Strategy Agent -->
-          <div class="agent-card" id="card-strategy" data-status="pending">
-            <div class="agent-header" onclick="toggleCard('strategy')">
-              <div class="status-ring" id="ring-strategy"></div>
-              <div class="agent-name">Strategy Agent</div>
-              <div class="agent-badge">Synthesis</div>
-              <div class="agent-chevron">▾</div>
-            </div>
-            <div class="agent-body" id="body-strategy">
-              <div class="tool-log" id="log-strategy"></div>
-              <div class="agent-summary" id="summary-strategy"></div>
-              <div class="agent-error-msg" id="error-strategy"></div>
-            </div>
-          </div>
-
-          <!-- Report Generator Agent -->
-          <div class="agent-card" id="card-report" data-status="pending">
-            <div class="agent-header" onclick="toggleCard('report')">
-              <div class="status-ring" id="ring-report"></div>
-              <div class="agent-name">Report Generator Agent</div>
-              <div class="agent-badge">Executive Report</div>
-              <div class="agent-chevron">▾</div>
-            </div>
-            <div class="agent-body" id="body-report">
-              <div class="tool-log" id="log-report"></div>
-              <div class="agent-summary" id="summary-report"></div>
-              <div class="agent-error-msg" id="error-report"></div>
-            </div>
-          </div>
-
-        </div><!-- /pipeline -->
-      </div><!-- /sidebar-inner -->
-    </aside>
-
-    <!-- Main Report Panel -->
-    <main class="main-panel">
-      <div class="report-header">
-        <div class="report-title">Intelligence Report</div>
-        <div class="report-meta" id="reportMeta">Awaiting analysis</div>
-      </div>
-      <div class="report-body">
-        <div class="empty-state" id="emptyState">
-          <div class="empty-icon">⚡</div>
-          <div class="empty-title">Workforce Intelligence Ready</div>
-          <div class="empty-sub">Ask a workforce strategy question and the multi-agent system will analyse market data, attrition risk, financial impact, and generate an executive recommendation.</div>
         </div>
-        <div class="report-content" id="reportContent" style="display:none;"></div>
-        <div class="warnings-box" id="warningsBox"></div>
+
+        <!-- Progress view -->
+        <div class="progress-view" id="progressView">
+          <div class="progress-head">
+            <div class="progress-head-label">Analysis In Progress</div>
+            <div class="progress-head-title">Running Multi-Agent Pipeline</div>
+            <div class="progress-head-query" id="progressQuery"></div>
+          </div>
+          <div class="workflow-steps" id="workflowSteps"></div>
+        </div>
+
+        <!-- Report view -->
+        <div class="report-view" id="reportView">
+          <div class="report-top-bar">
+            <div>
+              <div class="report-top-label">Intelligence Report</div>
+              <div class="report-top-title">Workforce Strategy Analysis</div>
+              <div class="report-top-meta" id="reportMeta">Generating report...</div>
+            </div>
+          </div>
+          <div class="report-sections" id="reportSections"></div>
+        </div>
+
       </div>
     </main>
 
-  </div><!-- /layout -->
+    <!-- RIGHT PANEL -->
+    <aside class="right-panel">
+      <div class="rp-header">
+        <div class="rp-title">Agent Activity</div>
+      </div>
+      <div class="rp-scroll" id="agentPanel"></div>
+      <div class="rp-progress" id="rpProgress">
+        <div class="rp-progress-labels">
+          <span id="rpProgressLabel">Analysis in progress</span>
+          <span id="rpProgressPct">0%</span>
+        </div>
+        <div class="rp-progress-bar">
+          <div class="rp-progress-fill" id="rpProgressFill"></div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
 
   <script>
-    // ── Agent name → card key mapping ──
-    const AGENT_KEYS = {
-      'Research Agent': 'research',
-      'Workforce Analytics Agent': 'analytics',
-      'Financial Impact Agent': 'financial',
-      'Strategy Agent': 'strategy',
-      'Report Generator Agent': 'report',
+    // ── SVG icon helper ──────────────────────────────────────────
+    const IC = {
+      search:       '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>',
+      'bar-chart':  '<line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/>',
+      dollar:       '<line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
+      lightbulb:    '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
+      filetext:     '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/>',
+      network:      '<rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/>',
+      check:        '<polyline points="20 6 9 17 4 12"/>',
+      x:            '<line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/>',
+      users:        '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+      trending:     '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+      target:       '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+      award:        '<circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>',
+      history:      '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/>',
+      warning:      '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/>',
     };
 
+    function icon(name, size = 15) {
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IC[name] || ''}</svg>`;
+    }
+
+    // ── Config ──────────────────────────────────────────────────
+    const AGENT_KEYS = {
+      'Research Agent':           'research',
+      'Workforce Analytics Agent':'analytics',
+      'Financial Impact Agent':   'financial',
+      'Strategy Agent':           'strategy',
+      'Report Generator Agent':   'report',
+    };
+
+    const STEPS = [
+      { key: 'research',   ic: 'search',    title: 'Market Research Agent',      desc: 'Analyzing compensation benchmarks and labor market data',        role: 'Market Intelligence' },
+      { key: 'analytics',  ic: 'bar-chart', title: 'Workforce Analytics Agent',  desc: 'Calculating attrition signals and workforce health metrics',    role: 'Attrition Analysis'  },
+      { key: 'financial',  ic: 'dollar',    title: 'Financial Impact Agent',     desc: 'Modeling cost scenarios and payroll adjustment impact',          role: 'Cost Modelling'      },
+      { key: 'strategy',   ic: 'lightbulb', title: 'Strategy Agent',             desc: 'Synthesizing insights and evaluating strategic trade-offs',      role: 'Strategic Synthesis' },
+      { key: 'report',     ic: 'filetext',  title: 'Report Generator Agent',     desc: 'Preparing structured executive intelligence report',             role: 'Executive Report'    },
+    ];
+
+    const AGENTS = [
+      { key: 'orchestrator', ic: 'network',    name: 'Orchestrator',              role: 'Pipeline Planner'    },
+      { key: 'research',     ic: 'search',     name: 'Research Agent',            role: 'Market Intelligence' },
+      { key: 'analytics',    ic: 'bar-chart',  name: 'Analytics Agent',           role: 'Attrition Analysis'  },
+      { key: 'financial',    ic: 'dollar',     name: 'Financial Agent',           role: 'Cost Modelling'      },
+      { key: 'strategy',     ic: 'lightbulb',  name: 'Strategy Agent',            role: 'Strategic Synthesis' },
+      { key: 'report',       ic: 'filetext',   name: 'Report Agent',              role: 'Executive Report'    },
+    ];
+
+    const SECTION_DEFS = [
+      { kw: ['executive','summary','overview'],              ic: 'award',    cls: 'ic-purple' },
+      { kw: ['market','benchmark','salary','compensation'],  ic: 'trending', cls: 'ic-blue'   },
+      { kw: ['workforce','attrition','retention','risk'],    ic: 'users',    cls: 'ic-orange'  },
+      { kw: ['financial','impact','cost','payroll'],         ic: 'dollar',   cls: 'ic-green'   },
+      { kw: ['strateg','recommend','action','plan'],         ic: 'target',   cls: 'ic-purple'  },
+    ];
+
+    // ── State ────────────────────────────────────────────────────
     let currentSource = null;
+    let doneCount     = 0;
+    const TOTAL       = STEPS.length;
+    let recent        = JSON.parse(localStorage.getItem('ca_recent') || '[]');
 
-    // ── Card toggle ──
-    function toggleCard(key) {
-      const card = document.getElementById(`card-${key}`);
-      card.classList.toggle('expanded');
+    // ── Init ─────────────────────────────────────────────────────
+    buildAgentPanel();
+    buildWorkflowSteps();
+    renderRecent();
+
+    // ── Build agent activity panel ───────────────────────────────
+    function buildAgentPanel() {
+      document.getElementById('agentPanel').innerHTML = AGENTS.map(a => `
+        <div class="agent-ac" id="ac-${a.key}" data-status="pending">
+          <div class="agent-ac-top">
+            <div class="agent-ac-icon">${icon(a.ic, 14)}</div>
+            <div class="agent-ac-info">
+              <div class="agent-ac-name">${a.name}</div>
+              <div class="agent-ac-role">${a.role}</div>
+            </div>
+            <div class="agent-ac-dot"></div>
+          </div>
+          <div class="agent-ac-activity"  id="ac-act-${a.key}"></div>
+          <div class="agent-ac-summary"   id="ac-sum-${a.key}"></div>
+          <div class="agent-ac-error"     id="ac-err-${a.key}"></div>
+        </div>
+      `).join('');
     }
 
-    function expandCard(key) {
-      const card = document.getElementById(`card-${key}`);
-      card.classList.add('expanded');
+    // ── Build workflow step cards ────────────────────────────────
+    function buildWorkflowSteps() {
+      document.getElementById('workflowSteps').innerHTML = STEPS.map((s, i) => `
+        <div class="workflow-step" id="ws-${s.key}">
+          <div class="step-indicator" id="ws-ind-${s.key}">
+            <span class="step-num" id="ws-num-${s.key}">${i + 1}</span>
+          </div>
+          <div class="step-body">
+            <div class="step-card">
+              <div class="step-card-top">
+                <div class="step-icon-wrap" id="ws-ic-${s.key}">${icon(s.ic, 16)}</div>
+                <div class="step-info">
+                  <div class="step-title">${s.title}</div>
+                  <div class="step-desc"  id="ws-desc-${s.key}">${s.desc}</div>
+                </div>
+                <div class="step-badge badge-pending" id="ws-badge-${s.key}">Pending</div>
+              </div>
+              <div class="step-summary"   id="ws-sum-${s.key}"></div>
+              <div class="step-error-msg" id="ws-err-${s.key}"></div>
+            </div>
+          </div>
+        </div>
+      `).join('');
     }
 
-    // ── Reset UI ──
-    function resetPipeline() {
-      const keys = ['orchestrator', 'research', 'analytics', 'financial', 'strategy', 'report'];
-      keys.forEach(k => {
-        const card = document.getElementById(`card-${k}`);
-        card.setAttribute('data-status', 'pending');
-        card.classList.remove('expanded');
-        const ring = document.getElementById(`ring-${k}`);
-        if (ring) ring.textContent = '';
-        const log = document.getElementById(`log-${k}`);
-        if (log) log.innerHTML = '';
-        const sum = document.getElementById(`summary-${k}`);
-        if (sum) sum.textContent = '';
-        const err = document.getElementById(`error-${k}`);
-        if (err) err.textContent = '';
-      });
-      document.getElementById('plan-content').innerHTML =
-        '<span style="color: var(--text-muted); font-size:11px;">Awaiting query...</span>';
-      document.getElementById('emptyState').style.display = 'flex';
-      document.getElementById('reportContent').style.display = 'none';
-      document.getElementById('reportContent').innerHTML = '';
-      document.getElementById('warningsBox').classList.remove('visible');
-      document.getElementById('warningsBox').textContent = '';
-      document.getElementById('reportMeta').textContent = 'Analysing...';
+    // ── Recent analyses ──────────────────────────────────────────
+    function renderRecent() {
+      const list = document.getElementById('recentList');
+      if (!recent.length) {
+        list.innerHTML = '<div class="recent-empty">No recent analyses yet</div>';
+        return;
+      }
+      list.innerHTML = recent.slice(0, 5).map(q => `
+        <div class="recent-item" onclick="setQ(${JSON.stringify(q)})">
+          <span class="recent-item-icon">${icon('history', 12)}</span>
+          <span>${q}</span>
+        </div>
+      `).join('');
     }
 
-    // ── File upload ──
+    function setQ(text) {
+      document.getElementById('queryInput').value = text;
+      document.getElementById('queryInput').focus();
+    }
+
+    function useExample(el) {
+      setQ(el.querySelector('span:last-child').textContent.trim());
+    }
+
+    // ── View state ───────────────────────────────────────────────
+    function showEmpty() {
+      document.getElementById('emptyState').style.display   = 'flex';
+      document.getElementById('progressView').classList.remove('active');
+      document.getElementById('reportView').classList.remove('active');
+    }
+
+    function showProgress(q) {
+      document.getElementById('emptyState').style.display   = 'none';
+      document.getElementById('progressQuery').textContent  = `"${q}"`;
+      document.getElementById('progressView').classList.add('active');
+      document.getElementById('reportView').classList.remove('active');
+      document.getElementById('rpProgress').classList.add('visible');
+    }
+
+    function showReport() {
+      document.getElementById('progressView').classList.remove('active');
+      document.getElementById('reportView').classList.add('active');
+    }
+
+    // ── Header status ────────────────────────────────────────────
+    function setStatus(state, text) {
+      const dot = document.getElementById('headerDot');
+      document.getElementById('headerText').textContent = text;
+      dot.className = 'status-dot' + (state === 'running' ? ' running' : '');
+      dot.style.background = state === 'done' ? 'var(--success)' : state === 'error' ? 'var(--error)' : '';
+    }
+
+    // ── Progress bar ─────────────────────────────────────────────
+    function setProgress(n) {
+      const pct = Math.round((n / TOTAL) * 100);
+      document.getElementById('rpProgressFill').style.width = pct + '%';
+      document.getElementById('rpProgressPct').textContent  = pct + '%';
+      document.getElementById('rpProgressLabel').textContent = pct < 100 ? 'Analysis in progress' : 'Analysis complete';
+    }
+
+    // ── Step helpers ─────────────────────────────────────────────
+    const BADGE_LABELS = { pending:'Pending', running:'Analyzing…', done:'Complete', error:'Error', skip:'Skipped' };
+
+    function setStepState(key, state) {
+      const el    = document.getElementById(`ws-${key}`);
+      const badge = document.getElementById(`ws-badge-${key}`);
+      const num   = document.getElementById(`ws-num-${key}`);
+      if (!el) return;
+      el.className = `workflow-step step-${state}`;
+      if (badge) { badge.className = `step-badge badge-${state}`; badge.textContent = BADGE_LABELS[state] || state; }
+      if (num)   { num.innerHTML = state === 'done' ? icon('check', 13) : state === 'error' ? icon('x', 13) : num.textContent; }
+    }
+
+    function setAgentState(key, state) {
+      const el = document.getElementById(`ac-${key}`);
+      if (el) el.setAttribute('data-status', state);
+    }
+
+    // ── File upload ──────────────────────────────────────────────
     document.getElementById('fileInput').addEventListener('change', async (e) => {
       const file = e.target.files[0];
       if (!file) return;
-
       const drop = document.getElementById('uploadDrop');
-      const status = document.getElementById('uploadStatus');
-      status.className = 'upload-status';
-      status.textContent = 'Uploading...';
-      status.style.display = 'block';
+      const fb   = document.getElementById('uploadFeedback');
+      fb.className = 'upload-feedback';
+      fb.innerHTML = 'Uploading…';
+      fb.style.display = 'flex';
 
-      const formData = new FormData();
-      formData.append('file', file);
-
+      const fd = new FormData();
+      fd.append('file', file);
       try {
-        const res = await fetch('/upload', { method: 'POST', body: formData });
+        const res  = await fetch('/upload', { method: 'POST', body: fd });
         const data = await res.json();
         if (res.ok) {
           drop.classList.add('has-file');
-          status.className = 'upload-status success';
-          status.textContent = `✓ ${data.message}`;
+          fb.className = 'upload-feedback success';
+          fb.innerHTML = `${icon('check', 12)} ${data.message}`;
         } else {
-          status.className = 'upload-status error';
-          status.textContent = `✗ ${data.error}`;
+          fb.className = 'upload-feedback error';
+          fb.innerHTML = `${icon('x', 12)} ${data.error}`;
         }
       } catch (err) {
-        status.className = 'upload-status error';
-        status.textContent = `✗ Upload failed: ${err.message}`;
+        fb.className = 'upload-feedback error';
+        fb.innerHTML = `${icon('x', 12)} Upload failed`;
       }
     });
 
-    // ── Run analysis ──
+    // ── Run analysis ─────────────────────────────────────────────
     function runAnalysis() {
       const query = document.getElementById('queryInput').value.trim();
       if (!query) {
-        document.getElementById('queryInput').focus();
+        const ta = document.getElementById('queryInput');
+        ta.classList.add('invalid');
+        ta.focus();
+        setTimeout(() => ta.classList.remove('invalid'), 600);
         return;
       }
 
       if (currentSource) { currentSource.close(); currentSource = null; }
 
-      resetPipeline();
+      // Reset
+      doneCount = 0;
+      buildAgentPanel();
+      buildWorkflowSteps();
+      setProgress(0);
+      document.getElementById('reportSections').innerHTML = '';
+      setStatus('running', 'Multi-Agent Intelligence Running');
+      showProgress(query);
+
+      // Save to recent
+      recent = [query, ...recent.filter(q => q !== query)].slice(0, 5);
+      localStorage.setItem('ca_recent', JSON.stringify(recent));
+      renderRecent();
+
       const btn = document.getElementById('runBtn');
       btn.classList.add('loading');
       btn.disabled = true;
 
-      const url = `/stream?q=${encodeURIComponent(query)}`;
-      currentSource = new EventSource(url);
-
-      currentSource.onmessage = (e) => {
-        const event = JSON.parse(e.data);
-        handleEvent(event);
-      };
-
-      currentSource.onerror = () => {
-        currentSource.close();
-        currentSource = null;
-        setButtonIdle();
-      };
+      currentSource = new EventSource(`/stream?q=${encodeURIComponent(query)}`);
+      currentSource.onmessage = e => handleEvent(JSON.parse(e.data));
+      currentSource.onerror   = () => { currentSource.close(); currentSource = null; resetBtn(); setStatus('idle', 'Multi-Agent Intelligence Ready'); };
     }
 
-    // ── Event dispatcher ──
-    function handleEvent(event) {
-      const { type, data } = event;
-
-      if (type === 'plan') {
-        handlePlan(data);
-      } else if (type === 'agent_start') {
-        handleAgentStart(data);
-      } else if (type === 'agent_thought') {
-        handleAgentThought(data);
-      } else if (type === 'agent_done') {
-        handleAgentDone(data);
-      } else if (type === 'agent_error') {
-        handleAgentError(data);
-      } else if (type === 'agent_skip') {
-        handleAgentSkip(data);
-      } else if (type === 'report') {
-        handleReport(data);
-      } else if (type === 'warnings') {
-        handleWarnings(data);
-      } else if (type === 'done') {
-        setButtonIdle();
-        if (currentSource) { currentSource.close(); currentSource = null; }
-        document.getElementById('reportMeta').textContent =
-          `Generated · ${new Date().toLocaleTimeString()}`;
-      } else if (type === 'error') {
-        showGlobalError(data.message);
-        setButtonIdle();
-      }
+    // ── Event dispatcher ─────────────────────────────────────────
+    function handleEvent({ type, data }) {
+      if      (type === 'plan')        onPlan(data);
+      else if (type === 'agent_start') onAgentStart(data);
+      else if (type === 'agent_thought')onAgentThought(data);
+      else if (type === 'agent_done')  onAgentDone(data);
+      else if (type === 'agent_error') onAgentError(data);
+      else if (type === 'agent_skip')  onAgentSkip(data);
+      else if (type === 'report')      onReport(data);
+      else if (type === 'warnings')    onWarnings(data);
+      else if (type === 'done')        onDone();
+      else if (type === 'error')       onError(data.message);
     }
 
-    function handlePlan(data) {
-      const orch = document.getElementById('card-orchestrator');
-      orch.setAttribute('data-status', 'running');
-      expandCard('orchestrator');
+    function onPlan(data) {
+      setAgentState('orchestrator', 'running');
+      const act = document.getElementById('ac-act-orchestrator');
+      if (act) act.textContent = data.job_family
+        ? `Planning pipeline for ${data.job_family} · ${data.region}`
+        : (data.message || 'Analyzing query and planning agent pipeline…');
 
       if (data.pipeline) {
-        const steps = data.pipeline.map((s, i) => {
-          const arrow = i < data.pipeline.length - 1 ? '<span class="plan-arrow">→</span>' : '';
-          return `<span class="plan-step">${s}</span>${arrow}`;
-        }).join(' ');
+        setTimeout(() => {
+          setAgentState('orchestrator', 'done');
+          const s = document.getElementById('ac-sum-orchestrator');
+          if (s) s.textContent = `Pipeline: ${data.pipeline.join(' → ')}`;
+        }, 350);
+      }
+    }
 
-        document.getElementById('plan-content').innerHTML = `
-          <div style="font-size:12px; color: var(--text-secondary); margin-bottom:8px;">
-            <strong style="color:#a78bfa;">Job Family:</strong> ${data.job_family} &nbsp;·&nbsp;
-            <strong style="color:#a78bfa;">Region:</strong> ${data.region} &nbsp;·&nbsp;
-            <strong style="color:#a78bfa;">Type:</strong> ${data.question_type}
+    function onAgentStart(data) {
+      const key  = AGENT_KEYS[data.agent];
+      if (!key) return;
+      const step = STEPS.find(s => s.key === key);
+      setStepState(key, 'running');
+      setAgentState(key, 'running');
+      const act = document.getElementById(`ac-act-${key}`);
+      if (act && step) act.textContent = step.desc;
+    }
+
+    function onAgentThought(data) {
+      const key = AGENT_KEYS[data.agent];
+      if (!key) return;
+      const act = document.getElementById(`ac-act-${key}`);
+      if (!act) return;
+      if (data.thought_type === 'tool_call')
+        act.textContent = `Using ${(data.data.tool || '').replace(/_/g, ' ')}…`;
+      else if (data.thought_type === 'thinking')
+        act.textContent = data.data.message || 'Processing…';
+    }
+
+    function onAgentDone(data) {
+      const key = AGENT_KEYS[data.agent];
+      if (!key) return;
+      doneCount++;
+      setStepState(key, 'done');
+      setAgentState(key, 'done');
+      if (data.summary) {
+        const ws = document.getElementById(`ws-sum-${key}`);
+        const ac = document.getElementById(`ac-sum-${key}`);
+        if (ws) ws.textContent = data.summary;
+        if (ac) ac.textContent = data.summary;
+        const act = document.getElementById(`ac-act-${key}`);
+        if (act) act.textContent = '';
+      }
+      setProgress(doneCount);
+    }
+
+    function onAgentError(data) {
+      const key = AGENT_KEYS[data.agent];
+      if (!key) return;
+      doneCount++;
+      setStepState(key, 'error');
+      setAgentState(key, 'error');
+      const we = document.getElementById(`ws-err-${key}`);
+      const ae = document.getElementById(`ac-err-${key}`);
+      if (we) we.textContent = data.message;
+      if (ae) ae.textContent = data.message;
+      setProgress(doneCount);
+    }
+
+    function onAgentSkip(data) {
+      const key = AGENT_KEYS[data.agent];
+      if (!key) return;
+      doneCount++;
+      setStepState(key, 'skip');
+      setAgentState(key, 'skip');
+      setProgress(doneCount);
+    }
+
+    function onReport(data) {
+      showReport();
+      renderReport(data.markdown);
+      document.getElementById('reportMeta').textContent =
+        `Generated · ${new Date().toLocaleTimeString()}`;
+    }
+
+    function onWarnings(data) {
+      if (!data.warnings?.length) return;
+      const card = document.createElement('div');
+      card.className = 'report-section-card';
+      card.style.borderColor = 'rgba(245,166,35,0.3)';
+      card.innerHTML = `
+        <div class="report-section-head">
+          <div class="report-section-icon ic-orange">${icon('warning', 16)}</div>
+          <div class="report-section-title">Warnings</div>
+        </div>
+        <div class="report-section-body">${data.warnings.map(w => `<p>• ${w}</p>`).join('')}</div>
+      `;
+      document.getElementById('reportSections').appendChild(card);
+    }
+
+    function onDone() {
+      resetBtn();
+      if (currentSource) { currentSource.close(); currentSource = null; }
+      setStatus('done', 'Analysis Complete');
+      setProgress(TOTAL);
+    }
+
+    function onError(msg) {
+      resetBtn();
+      setStatus('error', 'Error occurred');
+      showReport();
+      document.getElementById('reportSections').innerHTML = `
+        <div class="report-section-card" style="border-color:rgba(255,107,107,0.3);">
+          <div class="report-section-head">
+            <div class="report-section-icon ic-red">${icon('warning', 16)}</div>
+            <div class="report-section-title">Analysis Error</div>
           </div>
-          <div class="plan-pipeline">${steps}</div>
+          <div class="report-section-body"><p>${msg}</p></div>
+        </div>
+      `;
+    }
+
+    // ── Report renderer ──────────────────────────────────────────
+    function getSectionMeta(title) {
+      const low = title.toLowerCase();
+      for (const d of SECTION_DEFS)
+        if (d.kw.some(k => low.includes(k))) return { ic: d.ic, cls: d.cls };
+      return { ic: 'filetext', cls: 'ic-purple' };
+    }
+
+    function renderReport(markdown) {
+      const container = document.getElementById('reportSections');
+      container.innerHTML = '';
+
+      // Split on ## headings
+      const parts = markdown.split(/\n(?=##\s)/);
+
+      parts.forEach((part, idx) => {
+        const h2 = part.match(/^##\s+(.+)/);
+        const h1 = part.match(/^#\s+(.+)/);
+        let title, body;
+
+        if (h2) {
+          title = h2[1].trim();
+          body  = part.slice(h2[0].length).trim();
+        } else if (idx === 0 && h1) {
+          title = h1[1].trim();
+          body  = part.slice(h1[0].length).trim();
+        } else if (idx === 0 && part.trim()) {
+          title = 'Overview';
+          body  = part.trim();
+        } else {
+          return;
+        }
+
+        const { ic, cls } = getSectionMeta(title);
+        const card = document.createElement('div');
+        card.className = 'report-section-card';
+        card.innerHTML = `
+          <div class="report-section-head">
+            <div class="report-section-icon ${cls}">${icon(ic, 16)}</div>
+            <div class="report-section-title">${title}</div>
+          </div>
+          <div class="report-section-body">${marked.parse(body)}</div>
         `;
-        orch.setAttribute('data-status', 'done');
-        document.getElementById('ring-orchestrator').textContent = '✓';
-      } else {
-        document.getElementById('plan-content').innerHTML =
-          `<span style="color: var(--text-secondary); font-size:11px;">${data.message || ''}</span>`;
-      }
+        container.appendChild(card);
+      });
     }
 
-    function handleAgentStart(data) {
-      const key = AGENT_KEYS[data.agent];
-      if (!key) return;
-      const card = document.getElementById(`card-${key}`);
-      card.setAttribute('data-status', 'running');
-      expandCard(key);
-    }
-
-    function handleAgentThought(data) {
-      const key = AGENT_KEYS[data.agent];
-      if (!key) return;
-      const log = document.getElementById(`log-${key}`);
-      if (!log) return;
-
-      if (data.thought_type === 'tool_call') {
-        const inputStr = JSON.stringify(data.data.input || {})
-          .replace(/^{/, '(').replace(/}$/, ')').replace(/"/g, '');
-        const entry = document.createElement('div');
-        entry.className = 'log-call';
-        entry.innerHTML = `<span class="log-call-icon">▶</span><span>${data.data.tool}${inputStr}</span>`;
-        log.appendChild(entry);
-        log.scrollTop = log.scrollHeight;
-
-      } else if (data.thought_type === 'tool_result') {
-        const entry = document.createElement('div');
-        entry.className = 'log-result';
-        entry.innerHTML = `<span class="log-result-icon">↳</span><span>${data.data.result}</span>`;
-        log.appendChild(entry);
-        log.scrollTop = log.scrollHeight;
-
-      } else if (data.thought_type === 'thinking') {
-        const entry = document.createElement('div');
-        entry.className = 'log-thinking';
-        entry.textContent = `⟳ ${data.data.message}`;
-        log.appendChild(entry);
-        log.scrollTop = log.scrollHeight;
-      }
-    }
-
-    function handleAgentDone(data) {
-      const key = AGENT_KEYS[data.agent];
-      if (!key) return;
-      const card = document.getElementById(`card-${key}`);
-      card.setAttribute('data-status', 'done');
-      const ring = document.getElementById(`ring-${key}`);
-      if (ring) ring.textContent = '✓';
-      const sum = document.getElementById(`summary-${key}`);
-      if (sum && data.summary) sum.textContent = data.summary;
-    }
-
-    function handleAgentError(data) {
-      const key = AGENT_KEYS[data.agent];
-      if (!key) return;
-      const card = document.getElementById(`card-${key}`);
-      card.setAttribute('data-status', 'error');
-      const ring = document.getElementById(`ring-${key}`);
-      if (ring) ring.textContent = '✗';
-      const err = document.getElementById(`error-${key}`);
-      if (err) err.textContent = data.message;
-    }
-
-    function handleAgentSkip(data) {
-      const key = AGENT_KEYS[data.agent];
-      if (!key) return;
-      document.getElementById(`card-${key}`).setAttribute('data-status', 'skip');
-    }
-
-    function handleReport(data) {
-      document.getElementById('emptyState').style.display = 'none';
-      const content = document.getElementById('reportContent');
-      content.style.display = 'block';
-      content.innerHTML = marked.parse(data.markdown);
-      content.classList.add('fade-in');
-    }
-
-    function handleWarnings(data) {
-      if (!data.warnings || data.warnings.length === 0) return;
-      const box = document.getElementById('warningsBox');
-      box.innerHTML = '<strong>Warnings:</strong><br>' + data.warnings.map(w => `• ${w}`).join('<br>');
-      box.classList.add('visible');
-    }
-
-    function showGlobalError(msg) {
-      document.getElementById('reportMeta').textContent = 'Error occurred';
-      const box = document.getElementById('warningsBox');
-      box.innerHTML = `<strong>Error:</strong> ${msg}`;
-      box.classList.add('visible');
-    }
-
-    function setButtonIdle() {
+    // ── Helpers ──────────────────────────────────────────────────
+    function resetBtn() {
       const btn = document.getElementById('runBtn');
       btn.classList.remove('loading');
       btn.disabled = false;
     }
 
-    // Allow Enter (without shift) to submit
-    document.getElementById('queryInput').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        runAnalysis();
-      }
+    document.getElementById('queryInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); runAnalysis(); }
     });
   </script>
 </body>

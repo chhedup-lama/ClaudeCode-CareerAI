@@ -17,7 +17,14 @@ def filter_dataset(df: pd.DataFrame, filters: dict) -> pd.DataFrame:
         if col not in result.columns:
             continue
         if result[col].dtype == object:
-            result = result[result[col].str.lower() == str(value).lower()]
+            val_lower = str(value).lower()
+            # Try exact match first
+            exact = result[result[col].str.lower() == val_lower]
+            if not exact.empty:
+                result = exact
+            else:
+                # Fall back to substring match (e.g. "Engineer" matches "Software Engineer")
+                result = result[result[col].str.lower().str.contains(val_lower, na=False)]
         else:
             result = result[result[col] == value]
     return result

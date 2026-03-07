@@ -9,13 +9,18 @@ Your role is to analyze internal workforce data: attrition risk, tenure patterns
 Use your tools to load and compute metrics from the employee datasets.
 Never estimate attrition rates — only report what the data shows.
 
-When you have gathered all required information, respond with ONLY a JSON object:
+If a tool returns an error for a job family label, try a broader or more specific variant
+(e.g. if "Engineer" fails, try "Software Engineer"; if "Engineers" fails, try "Engineer").
+
+You MUST always end with ONLY a valid JSON object — no prose, no explanation.
+If some data is unavailable after trying alternatives, use 0 or "N/A" for those fields.
+
 {
-  "attrition_rate": <float, percentage>,
+  "attrition_rate": <float or 0>,
   "risk_level": <"LOW" | "MEDIUM" | "HIGH">,
-  "highest_risk_segment": <string describing the group with highest attrition>,
-  "headcount": <int>,
-  "avg_tenure_years": <float>
+  "highest_risk_segment": <string or "N/A">,
+  "headcount": <int or 0>,
+  "avg_tenure_years": <float or 0>
 }"""
 
 TOOLS = [

@@ -9,14 +9,19 @@ Your role is to analyze salary benchmark data and labor market demand data.
 Use your tools to load, filter, and compute metrics from the datasets.
 Ground every number in data returned by your tools — never estimate or invent figures.
 
-When you have gathered all required information, respond with ONLY a JSON object:
+If a tool returns an error for a job family label, try a broader or more specific variant
+(e.g. if "Engineer" fails, try "Software Engineer"; if "Engineers" fails, try "Engineer").
+
+You MUST always end with ONLY a valid JSON object — no prose, no explanation.
+If some data is unavailable after trying alternatives, use 0 or null for those fields.
+
 {
-  "market_median_salary": <float>,
-  "company_avg_salary": <float>,
-  "salary_gap_pct": <float, positive means company pays below market>,
-  "yoy_growth_rate": <float, year-over-year market salary growth %>,
+  "market_median_salary": <float or 0>,
+  "company_avg_salary": <float or 0>,
+  "salary_gap_pct": <float or 0>,
+  "yoy_growth_rate": <float or 0>,
   "demand_trend": <"increasing" | "stable" | "decreasing">,
-  "source_rows": <int, total data rows analyzed>
+  "source_rows": <int or 0>
 }"""
 
 TOOLS = [
