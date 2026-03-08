@@ -12,6 +12,25 @@
 
     :root {
       --primary:       #6C5CE7;
+      --accent:        #5B4FCC;
+      --bg:            #F4F6FA;
+      --panel:         #FFFFFF;
+      --card:          #F9FAFB;
+      --border:        #E2E6EF;
+      --text-primary:  #111827;
+      --text-secondary:#6B7280;
+      --success:       #16A34A;
+      --warning:       #D97706;
+      --error:         #DC2626;
+      --info:          #2563EB;
+      --primary-glow:  rgba(108, 92, 231, 0.15);
+      --success-bg:    rgba(22, 163, 74, 0.08);
+      --error-bg:      rgba(220, 38, 38, 0.08);
+      --warning-bg:    rgba(217, 119, 6, 0.08);
+    }
+
+    [data-theme="dark"] {
+      --primary:       #6C5CE7;
       --accent:        #8B7CF6;
       --bg:            #0F1117;
       --panel:         #151922;
@@ -1101,6 +1120,10 @@
     </div>
 
     <div class="header-actions">
+      <button class="icon-btn" id="themeToggle" title="Toggle dark mode" onclick="toggleTheme()">
+        <svg id="themeIconMoon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        <svg id="themeIconSun" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </button>
       <button class="icon-btn" title="Settings">
         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
       </button>
@@ -1299,6 +1322,21 @@
     let doneCount     = 0;
     const TOTAL       = STEPS.length;
     let recent        = JSON.parse(localStorage.getItem('ca_recent') || '[]');
+
+    // ── Theme ────────────────────────────────────────────────────
+    function applyTheme(dark) {
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+      document.getElementById('themeIconMoon').style.display = dark ? 'none' : '';
+      document.getElementById('themeIconSun').style.display  = dark ? ''     : 'none';
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      localStorage.setItem('ca_theme', isDark ? 'light' : 'dark');
+      applyTheme(!isDark);
+    }
+
+    applyTheme(localStorage.getItem('ca_theme') === 'dark');
 
     // ── Init ─────────────────────────────────────────────────────
     buildAgentPanel();
