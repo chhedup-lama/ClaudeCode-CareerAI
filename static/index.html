@@ -886,6 +886,77 @@
       font-family: 'Courier New', monospace;
     }
 
+    /* ── KPI chips ── */
+    .kpi-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel);
+    }
+
+    .kpi-chip {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 14px;
+      min-width: 110px;
+    }
+
+    .kpi-chip-val {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.2;
+      letter-spacing: -0.5px;
+    }
+
+    .kpi-chip-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+      text-transform: capitalize;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 160px;
+    }
+
+    /* ── Recommendation callout ── */
+    .rec-callout {
+      margin: 0 20px 20px;
+      padding: 16px 18px;
+      background: rgba(108,92,231,0.06);
+      border: 1.5px solid rgba(108,92,231,0.25);
+      border-left: 4px solid var(--primary);
+      border-radius: 8px;
+    }
+
+    .rec-callout-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .rec-callout p { margin-bottom: 8px; font-size: 14px; color: var(--text-primary); }
+    .rec-callout p:last-child { margin-bottom: 0; }
+    .rec-callout ul { padding-left: 18px; margin-bottom: 8px; }
+    .rec-callout li { margin-bottom: 4px; font-size: 14px; color: var(--text-primary); }
+    .rec-callout strong { color: var(--primary); }
+
+    /* ── Inline stat highlight ── */
+    .stat-hl {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
     /* ── RIGHT PANEL ── */
     .right-panel {
       width: 300px;
@@ -1672,6 +1743,35 @@
       return { ic: 'filetext', cls: 'ic-purple' };
     }
 
+    // Extract up to 4 KPI values from raw markdown text
+    function extractKPIs(rawText) {
+      const re = /([€$£]\s*[\d,.]+\s*[MKBmkb]?(?:\s*(?:annually|per\s+year))?|\+?[\d.]+\s*[-–]\s*[\d.]+\s*%|\+?[\d]+\.?[\d]*\s*%)/g;
+      const seen = new Set();
+      const kpis = [];
+      let m;
+      while ((m = re.exec(rawText)) !== null && kpis.length < 4) {
+        const val = m[1].replace(/\s+/g, '').trim();
+        if (seen.has(val) || val.length < 2) continue;
+        seen.add(val);
+        // derive a short label from surrounding text (up to 5 words before)
+        const before = rawText
+          .slice(Math.max(0, m.index - 70), m.index)
+          .replace(/[#*_\[\]`]/g, '')
+          .trim();
+        const words = before.split(/\s+/).slice(-5).join(' ').replace(/[:,]$/, '');
+        kpis.push({ val, label: words || 'Key Metric' });
+      }
+      return kpis;
+    }
+
+    // Highlight inline numbers in already-parsed HTML
+    function highlightStats(html) {
+      return html.replace(
+        /([€$£][\d,.]+[MKBmkb]?(?:\s*(?:annually|per year))?|\+?[\d.]+[-–][\d.]+%|\+?[\d]+\.?[\d]*%)/g,
+        '<span class="stat-hl">$1</span>'
+      );
+    }
+
     function renderReport(markdown) {
       const container = document.getElementById('reportSections');
       container.innerHTML = '';
@@ -1698,6 +1798,25 @@
         }
 
         const { ic, cls } = getSectionMeta(title);
+        const isRec = /strateg|recommend|conclusion|summary/i.test(title);
+        const kpis  = extractKPIs(body);
+        const parsedBody = highlightStats(marked.parse(body));
+
+        // Build KPI chips row
+        const kpiHtml = kpis.length ? `
+          <div class="kpi-row">
+            ${kpis.map(k => `
+              <div class="kpi-chip">
+                <span class="kpi-chip-val">${k.val}</span>
+                <span class="kpi-chip-label">${k.label}</span>
+              </div>`).join('')}
+          </div>` : '';
+
+        // Body rendering: recommendation sections get a styled callout
+        const bodyHtml = isRec
+          ? `<div class="rec-callout"><div class="rec-callout-label">Strategic Recommendation</div>${parsedBody}</div>`
+          : `<div class="report-section-body">${parsedBody}</div>`;
+
         const card = document.createElement('div');
         card.className = 'report-section-card';
         card.innerHTML = `
@@ -1705,7 +1824,8 @@
             <div class="report-section-icon ${cls}">${icon(ic, 16)}</div>
             <div class="report-section-title">${title}</div>
           </div>
-          <div class="report-section-body">${marked.parse(body)}</div>
+          ${kpiHtml}
+          ${bodyHtml}
         `;
         container.appendChild(card);
       });
