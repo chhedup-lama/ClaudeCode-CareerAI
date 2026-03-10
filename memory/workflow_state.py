@@ -14,7 +14,7 @@ class ResearchOutput(BaseModel):
     company_avg_salary: float
     salary_gap_pct: float
     yoy_growth_rate: float
-    demand_trend: str  # "increasing" | "stable" | "decreasing"
+    demand_trend: Optional[str] = "stable"  # "increasing" | "stable" | "decreasing"
     source_rows: int
 
 
