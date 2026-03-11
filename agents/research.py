@@ -94,6 +94,11 @@ def _execute_tool(name: str, inputs: dict) -> dict:
 
 
 def run_research_agent(intent: Intent, on_event: callable | None = None) -> ResearchOutput:
+    if not intent.job_family or not intent.region:
+        raise ValueError(
+            f"Research agent requires job_family and region; got "
+            f"job_family={intent.job_family!r}, region={intent.region!r}"
+        )
     user_message = (
         f"Analyze the labor market for {intent.job_family} in {intent.region}. "
         f"Use your tools to find the market median salary, the company average salary, "

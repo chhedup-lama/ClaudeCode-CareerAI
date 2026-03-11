@@ -32,7 +32,14 @@ def _parse_intent(query: str) -> Intent:
         system=INTENT_SYSTEM_PROMPT,
         messages=[{"role": "user", "content": query}],
     )
-    return Intent(**extract_json(response.content[0].text))
+    data = extract_json(response.content[0].text)
+    if not data.get("job_family") or not data.get("region"):
+        raise ValueError(
+            f"Could not extract job_family or region from query. "
+            f"Got: job_family={data.get('job_family')!r}, region={data.get('region')!r}. "
+            f"Please specify a job family (e.g. 'Software Engineer') and region (e.g. 'Ireland') in your query."
+        )
+    return Intent(**data)
 
 
 def run_streaming(query: str, on_event: callable) -> None:

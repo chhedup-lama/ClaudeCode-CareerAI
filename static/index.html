@@ -540,6 +540,18 @@
 
     .example-query-icon { color: var(--primary); flex-shrink: 0; }
 
+    .example-query--link {
+      color: #3b82f6;
+      border-color: #bfdbfe;
+      background: #eff6ff;
+    }
+    .example-query--link:hover {
+      color: #1d4ed8;
+      border-color: #3b82f6;
+      background: #dbeafe;
+    }
+    .example-query--link .example-query-icon { color: #3b82f6; }
+
     /* ── PROGRESS VIEW ── */
     .progress-view {
       display: none;
@@ -1265,23 +1277,11 @@
             <div class="empty-subtitle">Ask a workforce strategy question and our multi-agent system will analyze market data, attrition risk, financial impact, and generate an executive recommendation.</div>
             <div class="example-label">Try an example</div>
             <div class="example-queries">
-              <div class="example-query" onclick="useExample(this)">
+              <div class="example-query example-query--link" onclick="useExample(this)">
                 <span class="example-query-icon">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                 </span>
                 <span>Should we increase compensation for engineers in Ireland?</span>
-              </div>
-              <div class="example-query" onclick="useExample(this)">
-                <span class="example-query-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                </span>
-                <span>Which teams are at highest risk of attrition?</span>
-              </div>
-              <div class="example-query" onclick="useExample(this)">
-                <span class="example-query-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-                </span>
-                <span>What is the financial impact of a 6% salary adjustment?</span>
               </div>
             </div>
           </div>
