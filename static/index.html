@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1096,6 +1097,85 @@
       color: var(--text-primary);
     }
 
+    /* ── Section charts ── */
+    .section-chart-wrap {
+      padding: 16px 20px 4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-chart-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+
+    .section-chart-canvas {
+      width: 100% !important;
+      max-height: 180px;
+    }
+
+    /* Attrition gauge row */
+    .attrition-gauge-row {
+      display: flex;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .attrition-gauge-row canvas {
+      max-height: 160px;
+      flex: 1;
+    }
+
+    .attrition-stats {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+      min-width: 130px;
+    }
+
+    .attrition-stat {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .attrition-stat-val {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.1;
+    }
+
+    .attrition-stat-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .attrition-stat-val.risk-HIGH  { color: var(--error); }
+    .attrition-stat-val.risk-MEDIUM { color: var(--warning); }
+    .attrition-stat-val.risk-LOW   { color: var(--success); }
+
+    /* Demand trend badge */
+    .trend-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 12px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .trend-badge.increasing { background: var(--success-bg); color: var(--success); }
+    .trend-badge.decreasing { background: var(--error-bg);   color: var(--error); }
+    .trend-badge.stable     { background: var(--warning-bg); color: var(--warning); }
+
     /* ── RIGHT PANEL ── */
     .right-panel {
       width: 300px;
@@ -1895,7 +1975,10 @@
       setProgress(doneCount);
     }
 
+    let _chartData = {};
+
     function onReport(data) {
+      _chartData = data.chart_data || {};
       showReport();
       renderReport(data.markdown);
       document.getElementById('reportMeta').textContent =
@@ -1976,9 +2059,191 @@
       );
     }
 
+    // Chart instances registry (destroy before re-render)
+    const _charts = {};
+
+    function _destroyChart(id) {
+      if (_charts[id]) { _charts[id].destroy(); delete _charts[id]; }
+    }
+
+    function _chartColors(isDark) {
+      return {
+        primary:   '#6C5CE7',
+        accent:    '#8B7CF6',
+        success:   isDark ? '#3DDC97' : '#16A34A',
+        warning:   isDark ? '#F5A623' : '#D97706',
+        error:     isDark ? '#FF6B6B' : '#DC2626',
+        grid:      isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)',
+        text:      isDark ? '#9AA4B2' : '#6B7280',
+        textMain:  isDark ? '#E8ECF4' : '#111827',
+      };
+    }
+
+    function _isDark() {
+      return document.documentElement.getAttribute('data-theme') === 'dark';
+    }
+
+    // ─── Chart 1: Salary Benchmark (horizontal bar) ───
+    function renderSalaryChart(canvasId, d) {
+      _destroyChart(canvasId);
+      const c = _chartColors(_isDark());
+      const ctx = document.getElementById(canvasId).getContext('2d');
+      _charts[canvasId] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Company Average', 'Market Median'],
+          datasets: [{
+            data: [d.company_avg, d.market_median],
+            backgroundColor: [c.accent + 'CC', c.primary],
+            borderRadius: 6,
+            borderSkipped: false,
+          }],
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: ctx => ` €${ctx.parsed.x.toLocaleString()}`,
+              },
+            },
+          },
+          scales: {
+            x: {
+              grid: { color: c.grid },
+              ticks: {
+                color: c.text,
+                callback: v => `€${(v/1000).toFixed(0)}k`,
+              },
+            },
+            y: {
+              grid: { display: false },
+              ticks: { color: c.text },
+            },
+          },
+        },
+      });
+    }
+
+    // ─── Chart 2: Attrition doughnut ───
+    function renderAttritionChart(canvasId, d) {
+      _destroyChart(canvasId);
+      const c = _chartColors(_isDark());
+      const riskColor = { HIGH: c.error, MEDIUM: c.warning, LOW: c.success }[d.risk_level] || c.warning;
+      const ctx = document.getElementById(canvasId).getContext('2d');
+      const retained = Math.max(0, 100 - d.rate);
+      _charts[canvasId] = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Attrition', 'Retained', 'Threshold'],
+          datasets: [{
+            data: [d.rate, Math.max(0, d.threshold - d.rate), Math.max(0, retained - (d.threshold - d.rate))],
+            backgroundColor: [riskColor, c.warning + '55', c.grid],
+            borderWidth: 0,
+            hoverOffset: 4,
+          }],
+        },
+        options: {
+          cutout: '72%',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: ctx => {
+                  const labels = [`Attrition: ${d.rate}%`, `Threshold zone: ${d.threshold}%`, 'Retained'];
+                  return ` ${labels[ctx.dataIndex]}`;
+                },
+              },
+            },
+          },
+        },
+        plugins: [{
+          id: 'centerText',
+          afterDraw(chart) {
+            const { ctx, chartArea: { top, bottom, left, right } } = chart;
+            const cx = (left + right) / 2;
+            const cy = (top + bottom) / 2;
+            ctx.save();
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = riskColor;
+            ctx.font = 'bold 22px Open Sans, sans-serif';
+            ctx.fillText(`${d.rate}%`, cx, cy - 6);
+            ctx.fillStyle = c.text;
+            ctx.font = '11px Open Sans, sans-serif';
+            ctx.fillText('attrition', cx, cy + 14);
+            ctx.restore();
+          },
+        }],
+      });
+    }
+
+    // ─── Chart 3: Financial scenarios (grouped bar) ───
+    function renderFinancialChart(canvasId, d) {
+      _destroyChart(canvasId);
+      const c = _chartColors(_isDark());
+      const scenarios = d.scenarios || [];
+      const recommended = d.recommended;
+      const labels = scenarios.map(s => s.name);
+      const costs   = scenarios.map(s => s.total_cost_impact);
+      const bgColors = scenarios.map(s =>
+        s.name === recommended ? c.primary : c.accent + '88'
+      );
+      const ctx = document.getElementById(canvasId).getContext('2d');
+      _charts[canvasId] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Total Cost Impact',
+            data: costs,
+            backgroundColor: bgColors,
+            borderRadius: 6,
+            borderSkipped: false,
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: ctx => ` €${ctx.parsed.y.toLocaleString()} total`,
+                afterLabel: ctx => {
+                  const s = scenarios[ctx.dataIndex];
+                  return s.name === recommended ? ' ★ Recommended' : '';
+                },
+              },
+            },
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: c.text, maxRotation: 0 },
+            },
+            y: {
+              grid: { color: c.grid },
+              ticks: {
+                color: c.text,
+                callback: v => `€${(v/1000000).toFixed(1)}M`,
+              },
+            },
+          },
+        },
+      });
+    }
+
     function renderReport(markdown) {
       const container = document.getElementById('reportSections');
       container.innerHTML = '';
+      // Destroy any previous chart instances
+      Object.keys(_charts).forEach(id => _destroyChart(id));
 
       // Split on ## headings
       const parts = markdown.split(/\n(?=##\s)/);
@@ -2006,6 +2271,70 @@
         const kpis  = extractKPIs(body);
         const parsedBody = highlightStats(marked.parse(body));
 
+        // Determine which chart (if any) belongs to this section
+        const low = title.toLowerCase();
+        let chartHtml = '';
+        let chartId = null;
+        let chartType = null;
+
+        if (/market|benchmark/i.test(low) && _chartData.salary_benchmark) {
+          chartId   = `chart-salary-${idx}`;
+          chartType = 'salary';
+          const trend = _chartData.salary_benchmark.demand_trend || 'stable';
+          const trendIcon = trend === 'increasing' ? '↑' : trend === 'decreasing' ? '↓' : '→';
+          chartHtml = `
+            <div class="section-chart-wrap">
+              <div class="section-chart-title">
+                Salary Benchmark
+                <span class="trend-badge ${trend}">${trendIcon} ${trend} demand</span>
+              </div>
+              <div style="height:140px;position:relative;">
+                <canvas id="${chartId}" class="section-chart-canvas"></canvas>
+              </div>
+            </div>`;
+        } else if (/workforce|analytic|attrition/i.test(low) && _chartData.attrition) {
+          chartId   = `chart-attrition-${idx}`;
+          chartType = 'attrition';
+          const a = _chartData.attrition;
+          chartHtml = `
+            <div class="section-chart-wrap">
+              <div class="section-chart-title">Attrition Risk</div>
+              <div class="attrition-gauge-row">
+                <div style="height:150px;position:relative;flex:0 0 160px;">
+                  <canvas id="${chartId}"></canvas>
+                </div>
+                <div class="attrition-stats">
+                  <div class="attrition-stat">
+                    <span class="attrition-stat-val risk-${a.risk_level}">${a.risk_level}</span>
+                    <span class="attrition-stat-label">Risk Level</span>
+                  </div>
+                  <div class="attrition-stat">
+                    <span class="attrition-stat-val">${a.headcount.toLocaleString()}</span>
+                    <span class="attrition-stat-label">Headcount</span>
+                  </div>
+                  <div class="attrition-stat">
+                    <span class="attrition-stat-val">${a.avg_tenure.toFixed(1)} yrs</span>
+                    <span class="attrition-stat-label">Avg Tenure</span>
+                  </div>
+                  <div class="attrition-stat">
+                    <span class="attrition-stat-val" style="font-size:14px;color:var(--text-secondary);">${a.threshold}% threshold</span>
+                    <span class="attrition-stat-label">Critical limit</span>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+        } else if (/financial|impact/i.test(low) && _chartData.financial_scenarios) {
+          chartId   = `chart-financial-${idx}`;
+          chartType = 'financial';
+          chartHtml = `
+            <div class="section-chart-wrap">
+              <div class="section-chart-title">Scenario Cost Comparison — highlighted: recommended</div>
+              <div style="height:155px;position:relative;">
+                <canvas id="${chartId}" class="section-chart-canvas"></canvas>
+              </div>
+            </div>`;
+        }
+
         // Build KPI chips row
         const kpiHtml = kpis.length ? `
           <div class="kpi-row">
@@ -2029,9 +2358,19 @@
             <div class="report-section-title">${title}</div>
           </div>
           ${kpiHtml}
+          ${chartHtml}
           ${bodyHtml}
         `;
         container.appendChild(card);
+
+        // Render charts after DOM is attached
+        if (chartId && chartType) {
+          requestAnimationFrame(() => {
+            if (chartType === 'salary')    renderSalaryChart(chartId, _chartData.salary_benchmark);
+            if (chartType === 'attrition') renderAttritionChart(chartId, _chartData.attrition);
+            if (chartType === 'financial') renderFinancialChart(chartId, _chartData.financial_scenarios);
+          });
+        }
       });
     }
 

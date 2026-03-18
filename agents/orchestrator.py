@@ -167,7 +167,32 @@ def run_streaming(query: str, on_event: callable) -> None:
         report = run_report_generator_agent(state, on_event=_on_report)
         report_md = format_report(report.model_dump())
         on_event("agent_done", {"agent": "Report Generator Agent", "summary": "Executive report compiled successfully."})
-        on_event("report", {"markdown": report_md})
+
+        # Build structured chart data from agent outputs
+        chart_data = {}
+        if state.research_output:
+            chart_data["salary_benchmark"] = {
+                "company_avg": state.research_output.company_avg_salary,
+                "market_median": state.research_output.market_median_salary,
+                "gap_pct": state.research_output.salary_gap_pct,
+                "yoy_growth": state.research_output.yoy_growth_rate,
+                "demand_trend": state.research_output.demand_trend,
+            }
+        if state.analytics_output:
+            chart_data["attrition"] = {
+                "rate": state.analytics_output.attrition_rate,
+                "risk_level": state.analytics_output.risk_level,
+                "threshold": 15.0,
+                "headcount": state.analytics_output.headcount,
+                "avg_tenure": state.analytics_output.avg_tenure_years,
+            }
+        if state.financial_output:
+            chart_data["financial_scenarios"] = {
+                "scenarios": [s.model_dump() for s in state.financial_output.scenarios],
+                "recommended": state.financial_output.recommended_scenario,
+            }
+
+        on_event("report", {"markdown": report_md, "chart_data": chart_data})
     except Exception as e:
         state.errors.append(f"Report generator failed: {e}")
         on_event("agent_error", {"agent": "Report Generator Agent", "message": str(e)})
